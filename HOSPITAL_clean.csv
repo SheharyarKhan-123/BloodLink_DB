@@ -1,0 +1,101 @@
+HospitalID,AdminUserID,Name,City,Address,ContactNo
+1,38,Jinnah Hospital,Jabłonowo Pomorskie,58 Di Loreto Point,0327-9073343
+2,91,Hayatabad Medical Complex,Petit Raffray,7 Oxford Hill,0177-1849082
+3,99,Jinnah Hospital,Oumiao,364 Lindbergh Way,0756-8449449
+4,75,Jinnah Hospital,Zhireken,50 Gulseth Park,0110-5087102
+5,11,NICVD,Tagbacan Ibaba,8 Cody Park,0375-1714032
+6,69,Hayatabad Medical Complex,Flers,716 Luster Lane,0483-7769049
+7,92,Hayatabad Medical Complex,Canchaque,4915 Vahlen Drive,0205-8933052
+8,97,Rehman Medical Centre,Slobodskoy,8928 Graceland Point,0449-2297438
+9,30,Rehman Medical Centre,Cincinnati,857 Pennsylvania Plaza,0513-9037629
+10,84,NICVD,Washington,62 Parkside Terrace,0202-5501995
+11,29,Jinnah Hospital,Pundong,29880 Blaine Place,0344-3673971
+12,42,Hayatabad Medical Complex,Kunčice pod Ondřejníkem,4169 Namekagon Parkway,0281-6011625
+13,31,Aga Khan Hospital,Vilar,02 Donald Terrace,0255-4701363
+14,91,Jinnah Hospital,Zbarazh,10 Crest Line Alley,0815-6527949
+15,98,NICVD,Tampere,2 Sunbrook Drive,0194-5864725
+16,79,Hayatabad Medical Complex,Umbanyar,9468 Anthes Circle,0185-4444056
+17,97,NICVD,Kuzhuping,00057 Evergreen Court,0465-2526404
+18,19,Rehman Medical Centre,Krajan Suko Kidul,85 Rieder Junction,0949-2224046
+19,58,Jinnah Hospital,Nagutskoye,28 Goodland Road,0263-6735058
+20,79,Rehman Medical Centre,Pringsewu,75134 Claremont Circle,0633-5173996
+21,39,Hayatabad Medical Complex,Ouaoula,259 Glendale Crossing,0560-8034460
+22,84,Hayatabad Medical Complex,Balbagay,53 Warbler Plaza,0589-7911085
+23,86,Rehman Medical Centre,Al Ḩayfah,02 Vermont Court,0985-6114687
+24,49,Hayatabad Medical Complex,Tripoli,30892 Coleman Plaza,0254-4336896
+25,7,NICVD,Ceelbuur,2 Eliot Place,0479-5637652
+26,22,Jinnah Hospital,Ochla,8 Jana Way,0653-5113889
+27,53,NICVD,Guchang,369 Merry Place,0802-1456696
+28,92,Jinnah Hospital,Bayzhansay,441 Arrowood Road,0808-9033197
+29,24,Aga Khan Hospital,Nowe Brzesko,7 Pennsylvania Point,0986-8089080
+30,93,Aga Khan Hospital,Erandique,9 Burning Wood Junction,0658-1933055
+31,16,NICVD,Yeshan,2 3rd Point,0851-7119543
+32,92,Jinnah Hospital,Sunfang,74768 Commercial Circle,0917-8248980
+33,73,Aga Khan Hospital,Quinta do Sobrado,255 Nova Street,0493-4483984
+34,48,Aga Khan Hospital,Rila,12345 Green Way,0762-3233867
+35,1,Jinnah Hospital,Hearst,1555 Jay Junction,0611-5215558
+36,74,Jinnah Hospital,Mendez-Nuñez,31 Schlimgen Avenue,0778-1010519
+37,37,Hayatabad Medical Complex,Strömsund,5521 Roth Pass,0722-1213728
+38,28,Jinnah Hospital,Nor Gyugh,238 Jenna Lane,0183-9341717
+39,40,NICVD,Chrysó,0458 Linden Pass,0961-5996580
+40,67,Jinnah Hospital,Rimus,11682 Summer Ridge Point,0868-7297821
+41,23,Aga Khan Hospital,Kajisara,30 Golf Drive,0149-9833471
+42,20,Jinnah Hospital,Krzczonów,3428 Lakewood Gardens Terrace,0372-8015014
+43,27,Jinnah Hospital,Huaidian,910 Artisan Hill,0972-4104754
+44,98,Jinnah Hospital,Coaldale,16 La Follette Circle,0971-4517226
+45,95,Jinnah Hospital,Cầu Gồ,2 Hauk Way,0441-5382277
+46,15,Hayatabad Medical Complex,Tanahmerah,596 Bartillon Crossing,0639-5071711
+47,99,Jinnah Hospital,Hanyuan,485 Doe Crossing Crossing,0680-3105263
+48,57,Hayatabad Medical Complex,Cuevas,6734 Red Cloud Court,0662-2039785
+49,43,Jinnah Hospital,Tatuí,5840 Grover Avenue,0232-4294983
+50,77,Aga Khan Hospital,Kumla,98 Waubesa Park,0423-8935414
+51,2,Jinnah Hospital,Sotteville-lès-Rouen,39 Marquette Drive,0310-4695611
+52,1,Rehman Medical Centre,Kopral,46 Shelley Plaza,0390-3982682
+53,88,Rehman Medical Centre,Kladi,8 Packers Place,0505-3904415
+54,48,Rehman Medical Centre,Air Bangis,40731 Springs Avenue,0945-5188689
+55,44,Rehman Medical Centre,Zhaike,5 Eliot Lane,0308-2362585
+56,20,NICVD,Maturín,62 Lawn Trail,0931-1222518
+57,5,Jinnah Hospital,Santa Teresa,71 Londonderry Road,0677-1946055
+58,15,Jinnah Hospital,Sukamaju,29 Algoma Pass,0234-8482682
+59,2,NICVD,Avallon,140 Melody Trail,0768-8134970
+60,5,Hayatabad Medical Complex,Gvardeysk,0 Longview Alley,0706-7557888
+61,100,Jinnah Hospital,Almaznyy,59951 Walton Point,0212-9439416
+62,35,Rehman Medical Centre,Paris La Défense,887 Eggendart Crossing,0964-3071488
+63,21,NICVD,Dalu,7744 Hagan Pass,0425-7315746
+64,85,NICVD,Suva Reka,685 Crest Line Terrace,0343-5390851
+65,56,Jinnah Hospital,Tobruk,0 Granby Street,0957-1015046
+66,64,Jinnah Hospital,Kuytun,150 Northland Junction,0609-7210414
+67,39,NICVD,Älvsjö,76181 Redwing Pass,0151-6244283
+68,72,Aga Khan Hospital,Bafia,60 Service Pass,0292-5824826
+69,2,Hayatabad Medical Complex,Shuitianzhuang,304 Sage Road,0583-5081412
+70,83,Hayatabad Medical Complex,Changping,08 Lyons Way,0479-2491799
+71,45,Jinnah Hospital,Osekovo,53 Goodland Terrace,0343-7273999
+72,5,Aga Khan Hospital,Ghormach,9 Schurz Circle,0132-2137540
+73,76,NICVD,Oliveirinha,7330 Buhler Parkway,0246-4097290
+74,67,Hayatabad Medical Complex,Montilla,220 Fremont Avenue,0419-6272866
+75,42,Hayatabad Medical Complex,General Pico,6 Emmet Pass,0704-6375199
+76,90,Jinnah Hospital,Paracuru,92441 Fair Oaks Court,0279-1749731
+77,17,Aga Khan Hospital,Orléans,8 Anzinger Way,0445-4112888
+78,30,Rehman Medical Centre,Kuantan,03 Northland Trail,0982-5222931
+79,3,Jinnah Hospital,Huotong,76 Reinke Terrace,0254-6789143
+80,37,Jinnah Hospital,Karasgede,24 Nancy Alley,0885-8998790
+81,78,Rehman Medical Centre,Firmat,211 Darwin Court,0645-6800006
+82,81,Aga Khan Hospital,Jeblog Satu,2 1st Place,0596-6726894
+83,36,Hayatabad Medical Complex,Bestöbe,8 International Lane,0381-6650329
+84,62,Aga Khan Hospital,Paris 09,9 Maple Pass,0876-9444856
+85,93,Rehman Medical Centre,Weyburn,34361 Hanover Terrace,0694-4961884
+86,59,Hayatabad Medical Complex,Pampierstad,64 Scofield Hill,0963-5631304
+87,66,Rehman Medical Centre,Ūdalah,9 Dorton Plaza,0416-2820405
+88,71,Rehman Medical Centre,Awilega,8 Oriole Hill,0133-8795616
+89,29,Jinnah Hospital,Mafra,09 Bashford Drive,0652-9083672
+90,49,Aga Khan Hospital,Kharabali,962 Northview Lane,0343-7680591
+91,40,Hayatabad Medical Complex,Yaroslavskiy,1 Old Shore Junction,0989-5012033
+92,85,Aga Khan Hospital,Yara,8365 Jenna Hill,0267-3147116
+93,81,Aga Khan Hospital,Kamensk-Shakhtinskiy,38951 Summit Junction,0598-8256067
+94,99,Hayatabad Medical Complex,Pizarrete,49943 Kinsman Point,0590-7343580
+95,37,Jinnah Hospital,Guangming,26036 Cottonwood Crossing,0408-4364105
+96,62,Aga Khan Hospital,Sarlat-la-Canéda,86073 Cambridge Court,0409-1857660
+97,85,Hayatabad Medical Complex,Atlantis,8 Sunnyside Point,0923-7728017
+98,70,NICVD,Jaruco,261 Monica Hill,0740-5529299
+99,38,Rehman Medical Centre,Jiancha,7940 Johnson Terrace,0225-5268550
+100,26,Hayatabad Medical Complex,Dongtuan,6 Manitowish Point,0256-5986327

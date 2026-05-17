@@ -1,0 +1,101 @@
+BankID,AdminUserID,Name,City,Address,ContactNo
+1,7,Shaukat Khanam,Liverpool,66 Barnett Way,0992-4807484
+2,35,Fatimid Foundation,Mikulovice,19441 Reindahl Terrace,0294-7429735
+3,93,Fatimid Foundation,Tržič,32122 Colorado Park,0862-2435008
+4,82,Eidhi Foundation,Waru,70 Upham Parkway,0623-9785173
+5,18,Fatimid Foundation,St. Thomas,463 1st Street,0730-4582760
+6,74,Shaukat Khanam,Benoni,27042 Burning Wood Court,0988-9259263
+7,40,Al-Shifa Blood Center,Rattanaburi,80 Cascade Parkway,0497-1268464
+8,39,City Blood Bank,Robonkon,150 Forest Court,0544-3017260
+9,24,Al-Shifa Blood Center,Tolitoli,8404 Brown Road,0461-7465815
+10,8,Husaini Foundation,Genet,47 Bunker Hill Alley,0458-9397410
+11,13,Eidhi Foundation,Hagerstown,517 Sachs Crossing,0240-8537310
+12,50,Shaukat Khanam,Lansing,8 Bowman Junction,0517-6208503
+13,21,Fatimid Foundation,Nong Muang Khai,9458 Havey Road,0622-6931817
+14,42,Liaquat Blood Bank,Lenchwe Le Tau,5 Dorton Lane,0374-2046264
+15,25,Fatimid Foundation,Mariel,6528 Bayside Center,0468-2727639
+16,93,Liaquat Blood Bank,Bato,375 Fairview Way,0298-8014249
+17,72,Husaini Foundation,Lagunillas,7647 Beilfuss Road,0195-7152882
+18,31,Fatimid Foundation,Puerto San José,64 Elka Trail,0139-5556216
+19,79,Al-Shifa Blood Center,Stąporków,94 Huxley Avenue,0492-5870964
+20,97,Shaukat Khanam,Wiphawadi,5 Arapahoe Way,0589-5950476
+21,31,City Blood Bank,Gumalang,68176 Drewry Avenue,0567-4693791
+22,28,Eidhi Foundation,Watulabara,90204 Continental Point,0576-1634329
+23,1,Liaquat Blood Bank,Tianjin,76 Nancy Junction,0459-3075767
+24,60,Husaini Foundation,Punggurharjo,3 Spenser Center,0824-1216798
+25,41,City Blood Bank,Ikeja,3969 Pierstorff Lane,0859-7872443
+26,39,Shaukat Khanam,Johanneshov,0113 Elka Point,0702-4368593
+27,70,Shaukat Khanam,Aytos,5 7th Road,0442-9549759
+28,71,Eidhi Foundation,Gosen,33 Rigney Parkway,0261-7302017
+29,59,Shaukat Khanam,Taihe,393 Graceland Junction,0419-6540732
+30,71,Shaukat Khanam,Radekhiv,5426 Green Ridge Way,0433-7720371
+31,35,Husaini Foundation,Cangchang,93 Shelley Hill,0638-2556727
+32,68,City Blood Bank,São Bento,35499 Browning Crossing,0602-6870081
+33,71,Shaukat Khanam,Mae Hi,4600 Comanche Terrace,0927-3709719
+34,67,Al-Shifa Blood Center,Laixi,34252 Loomis Road,0596-8305266
+35,75,Eidhi Foundation,‘Aşīrah ash Shamālīyah,92 Kedzie Avenue,0438-9794941
+36,15,Eidhi Foundation,Kedungbanteng Krajan,639 Dapin Center,0478-1904371
+37,81,City Blood Bank,Meiqi,61778 Sachtjen Center,0876-5200613
+38,70,Shaukat Khanam,Hamilton,4 Lake View Drive,0419-4280021
+39,76,Eidhi Foundation,Jun’an,62980 Fuller Pass,0809-3163175
+40,100,Shaukat Khanam,Nis’oni,105 Bluejay Terrace,0811-5336376
+41,93,Shaukat Khanam,Pagersari,8540 South Alley,0410-9248797
+42,61,Fatimid Foundation,Pyay,8 Eagan Avenue,0800-2395135
+43,19,Eidhi Foundation,El Refugio,38 Ludington Place,0824-3578419
+44,35,Liaquat Blood Bank,Ganyi,45805 Mesta Circle,0462-5211694
+45,72,Husaini Foundation,La Concordia,1873 Lighthouse Bay Place,0116-2872446
+46,59,Shaukat Khanam,Novyye Kuz’minki,745 Main Way,0365-5277934
+47,23,Liaquat Blood Bank,Famões,108 Birchwood Hill,0785-1763821
+48,52,Husaini Foundation,Victoria,946 1st Trail,0586-9385216
+49,29,Shaukat Khanam,Xiabuji,364 Cardinal Terrace,0327-2977031
+50,33,Al-Shifa Blood Center,Dalupaon,95604 Commercial Alley,0244-3358139
+51,85,Eidhi Foundation,Karangasem,92763 Elka Drive,0607-7797598
+52,57,Fatimid Foundation,Neebing,58 Schiller Drive,0845-9955875
+53,12,City Blood Bank,Independencia,99016 American Center,0114-3410101
+54,62,Eidhi Foundation,Datangzhuang,81954 Ramsey Hill,0540-8948308
+55,42,Eidhi Foundation,Gaoshi,0 Butternut Lane,0619-6517351
+56,57,Liaquat Blood Bank,Bungoma,832 Acker Hill,0535-5964049
+57,81,Liaquat Blood Bank,Kabulusan,6 Farwell Place,0388-2138777
+58,1,Al-Shifa Blood Center,Sanchahe,12113 Shoshone Street,0202-7787938
+59,70,Husaini Foundation,Koungou,082 Commercial Place,0109-1938723
+60,69,Shaukat Khanam,Sindang,9 Sheridan Circle,0688-8211901
+61,3,Husaini Foundation,Los Lotes,7777 Dayton Pass,0365-1393727
+62,97,Al-Shifa Blood Center,Jiujie,1 Eastwood Circle,0674-9118671
+63,72,Husaini Foundation,Saint-Lô,1659 Tennessee Place,0531-1982526
+64,57,City Blood Bank,Villasis,79943 Pierstorff Court,0318-6571296
+65,43,Fatimid Foundation,Areguá,21 Hanson Junction,0597-9707885
+66,43,Eidhi Foundation,Barbudo,5 Prentice Junction,0651-7933352
+67,83,Eidhi Foundation,Andorinha,12 Prentice Court,0354-3095655
+68,97,Husaini Foundation,Denton,716 Michigan Court,0682-8002849
+69,51,Fatimid Foundation,Chiguata,80 Fulton Plaza,0677-2346361
+70,88,Eidhi Foundation,Changzhou,811 Maywood Plaza,0102-5336338
+71,23,Al-Shifa Blood Center,Anding,40 Walton Park,0725-9014498
+72,20,Husaini Foundation,Wierzawice,91 Gina Pass,0949-5035804
+73,17,Fatimid Foundation,Thanh Ba,2710 Linden Parkway,0400-3972518
+74,74,Al-Shifa Blood Center,Monte Patria,325 Briar Crest Junction,0269-3652388
+75,43,Shaukat Khanam,Kendaruan,71 Victoria Drive,0837-9719159
+76,58,Shaukat Khanam,Batarasa,45702 Elmside Plaza,0301-3803139
+77,30,Liaquat Blood Bank,Qīr Moāv,36738 Judy Trail,0588-2376036
+78,8,Fatimid Foundation,Saskylakh,23 Doe Crossing Court,0818-3996603
+79,17,Fatimid Foundation,Phon Charoen,9169 Iowa Lane,0333-3443704
+80,8,City Blood Bank,Livadiya,539 Kensington Court,0899-2048824
+81,15,Liaquat Blood Bank,Nglengkong,3020 Declaration Center,0834-1962636
+82,82,Eidhi Foundation,Nicola Town,680 8th Plaza,0332-7173700
+83,2,Husaini Foundation,Tintafor,0570 Waubesa Lane,0133-4714657
+84,41,Shaukat Khanam,Erbil,121 Texas Point,0951-3128130
+85,37,Shaukat Khanam,Bukal,7 Fordem Road,0430-7614667
+86,48,Fatimid Foundation,Dingdian,89596 Homewood Alley,0857-3136346
+87,27,Al-Shifa Blood Center,Rudnyy,13814 Nevada Avenue,0500-5438523
+88,67,Al-Shifa Blood Center,Zhongguanyi,5961 Nevada Point,0978-1097737
+89,29,Fatimid Foundation,Povarovo,4042 Paget Alley,0816-2964646
+90,75,Liaquat Blood Bank,Stockholm,1541 Stephen Street,0570-7761190
+91,28,Al-Shifa Blood Center,Kulotino,6 Lakewood Gardens Alley,0857-2514998
+92,98,Al-Shifa Blood Center,Brumadinho,7 Meadow Vale Road,0768-3324399
+93,48,City Blood Bank,Presidencia Roque Sáenz Peña,332 Scott Court,0523-3202141
+94,11,Husaini Foundation,Yuty,6774 Dorton Place,0255-2638219
+95,74,Shaukat Khanam,Wąbrzeźno,50397 Melrose Terrace,0410-2089173
+96,40,Liaquat Blood Bank,Jangdam,8 Corscot Trail,0336-6145077
+97,14,Fatimid Foundation,Bozoum,5 Nevada Plaza,0317-1799906
+98,94,City Blood Bank,Koblain,18343 Fairview Crossing,0590-3401762
+99,74,City Blood Bank,Tunja,366 Meadow Vale Circle,0785-1216957
+100,84,Eidhi Foundation,Urpay,0623 Vidon Center,0895-1728724
