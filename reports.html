@@ -1,0 +1,281 @@
+{% extends 'base.html' %}
+{% block title %}Reports{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* ── BAR CHART ── */
+  .bar-chart { display: flex; flex-direction: column; gap: .6rem; }
+  .bar-row { display: flex; align-items: center; gap: .75rem; }
+  .bar-label { font-family: 'Syne', sans-serif; font-weight: 700; font-size: .78rem;
+               min-width: 44px; color: var(--red); letter-spacing: .03em; }
+  .bar-track { flex: 1; height: 10px; background: var(--surface2);
+               border-radius: 999px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 999px; transition: width .6s cubic-bezier(.4,0,.2,1);
+              background: linear-gradient(90deg, var(--red-dim), var(--red)); }
+  .bar-fill.low    { background: linear-gradient(90deg, #78350f, #f59e0b); }
+  .bar-fill.zero   { background: #3f1012; }
+  .bar-fill.ok     { background: linear-gradient(90deg, #14532d, #22c55e); }
+  .bar-val { font-family: 'DM Mono', monospace; font-size: .78rem; min-width: 48px;
+             text-align: right; color: var(--text-dim); }
+
+  /* ── SHORTAGE ITEM ── */
+  .shortage-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: .7rem 0; border-bottom: 1px solid var(--border);
+  }
+  .shortage-item:last-child { border-bottom: none; }
+
+  /* ── ELIGIBLE GRID ── */
+  .eligible-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px,1fr)); gap: .65rem; }
+  .eligible-card {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; padding: .85rem 1rem;
+    display: flex; flex-direction: column; align-items: center; gap: .35rem;
+  }
+  .eligible-count { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--success); }
+  .eligible-bt    { font-family: 'Syne', sans-serif; font-weight: 700; font-size: .78rem;
+                    background: var(--red-glow); border: 1px solid var(--red-dim);
+                    color: var(--red); padding: .15rem .5rem; border-radius: 6px; }
+  .eligible-label { font-size: .72rem; color: var(--text-dim); text-align: center; }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem;
+    margin-bottom: 1rem; display: flex; align-items: center; gap: .5rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-title">Reports &amp; Analytics</div>
+    <div class="page-sub">System-wide blood supply overview and shortage alerts</div>
+  </div>
+  <div style="display:flex;gap:.75rem;">
+    <a href="{{ url_for('inventory') }}" class="btn btn-outline">📦 Full Inventory</a>
+    <a href="{{ url_for('donations') }}" class="btn btn-outline">🩸 Donations</a>
+  </div>
+</div>
+
+<!-- ── TOP STATS ROW ── -->
+{% set total_units = inv_summary | sum(attribute='total') if inv_summary else 0 %}
+{% set total_eligible = eligible | sum(attribute='cnt') if eligible else 0 %}
+<div class="stat-grid" style="margin-bottom:2rem;">
+  <div class="stat-card">
+    <div class="stat-val">{{ total_units }}</div>
+    <div class="stat-label">Total Units in System</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val" style="color:{% if shortages %}#f87171{% else %}var(--success){% endif %};">
+      {{ shortages|length if shortages else 0 }}
+    </div>
+    <div class="stat-label">Blood Types in Shortage</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val" style="color:var(--success);">{{ total_eligible }}</div>
+    <div class="stat-label">Eligible Donors</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val">{{ recent_donations|length if recent_donations else 0 }}</div>
+    <div class="stat-label">Recent Donations (Last 10)</div>
+  </div>
+</div>
+
+<!-- ── ROW 1: SHORTAGE ALERT + INVENTORY BAR CHART ── -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
+
+  <!-- CRITICAL SHORTAGES -->
+  <div class="card">
+    <div class="section-label">
+      <span style="color:var(--red);">⚠</span> Critical Shortage Alert
+      <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--text-dim);
+                   background:var(--surface2);border:1px solid var(--border);
+                   padding:.15rem .5rem;border-radius:999px;margin-left:.25rem;">
+        &lt; 5 units threshold
+      </span>
+    </div>
+
+    {% if shortages %}
+      {% for s in shortages %}
+      <div class="shortage-item">
+        <div style="display:flex;align-items:center;gap:.65rem;">
+          <span class="bt">{{ s.BloodType }}</span>
+          <div>
+            <div style="font-size:.82rem;font-weight:500;">
+              {% if s.total == 0 %}
+                Completely out of stock
+              {% elif s.total == 1 %}
+                Critically low — only {{ s.total }} unit
+              {% else %}
+                Only {{ s.total }} units remaining
+              {% endif %}
+            </div>
+            <div style="font-size:.75rem;color:var(--text-dim);">
+              Across {{ s.bank_count }} bank{% if s.bank_count != 1 %}s{% endif %}
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.3rem;">
+          {% if s.total == 0 %}
+            <span class="badge badge-red">Critical</span>
+          {% elif s.total < 3 %}
+            <span class="badge badge-red">Very Low</span>
+          {% else %}
+            <span class="badge badge-yellow">Low</span>
+          {% endif %}
+          <span style="font-family:'DM Mono',monospace;font-size:.78rem;
+                       color:{% if s.total == 0 %}#f87171{% else %}#fcd34d{% endif %};">
+            {{ s.total }} / 5 units
+          </span>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty" style="padding:2rem;">
+        <div class="empty-icon">✅</div>
+        <div style="font-size:.9rem;font-weight:600;color:var(--text);margin-bottom:.3rem;">All types well stocked</div>
+        <div style="font-size:.8rem;">Every blood type has 5 or more units available.</div>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- INVENTORY BAR CHART -->
+  <div class="card">
+    <div class="section-label">
+      <span style="color:var(--info);">📊</span> Inventory by Blood Type
+    </div>
+
+    {% if inv_summary %}
+      {% set max_val = inv_summary | map(attribute='total') | max %}
+      <div class="bar-chart">
+        {% for row in inv_summary %}
+        {% set pct = ((row.total / max_val) * 100) | round | int if max_val > 0 else 0 %}
+        <div class="bar-row">
+          <span class="bar-label">{{ row.BloodType }}</span>
+          <div class="bar-track">
+            <div class="bar-fill {% if row.total == 0 %}zero{% elif row.total < 5 %}low{% elif row.total >= 15 %}ok{% endif %}"
+                 style="width:{{ pct }}%;"></div>
+          </div>
+          <span class="bar-val"
+                style="color:{% if row.total == 0 %}#f87171{% elif row.total < 5 %}#fcd34d{% else %}var(--text-dim){% endif %};">
+            {{ row.total }} u
+          </span>
+        </div>
+        {% endfor %}
+      </div>
+      <div style="margin-top:1rem;padding-top:.85rem;border-top:1px solid var(--border);
+                  display:flex;gap:1rem;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:.35rem;font-size:.75rem;color:var(--text-dim);">
+          <div style="width:10px;height:10px;border-radius:2px;background:var(--red);flex-shrink:0;"></div> Adequate
+        </div>
+        <div style="display:flex;align-items:center;gap:.35rem;font-size:.75rem;color:var(--text-dim);">
+          <div style="width:10px;height:10px;border-radius:2px;background:#f59e0b;flex-shrink:0;"></div> Low (&lt;5)
+        </div>
+        <div style="display:flex;align-items:center;gap:.35rem;font-size:.75rem;color:var(--text-dim);">
+          <div style="width:10px;height:10px;border-radius:2px;background:#3f1012;flex-shrink:0;"></div> Empty
+        </div>
+        <div style="display:flex;align-items:center;gap:.35rem;font-size:.75rem;color:var(--text-dim);">
+          <div style="width:10px;height:10px;border-radius:2px;background:var(--success);flex-shrink:0;"></div> Healthy (≥15)
+        </div>
+      </div>
+    {% else %}
+      <div class="empty" style="padding:2rem;">
+        <div class="empty-icon">📦</div>
+        <div style="font-size:.85rem;">No inventory data available yet.</div>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+
+<!-- ── ROW 2: ELIGIBLE DONORS ── -->
+<div class="card" style="margin-bottom:1.5rem;">
+  <div class="section-label">
+    <span style="color:var(--success);">✓</span> Eligible Donors by Blood Type
+    <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--text-dim);
+                 background:var(--surface2);border:1px solid var(--border);
+                 padding:.15rem .5rem;border-radius:999px;margin-left:.25rem;">
+      90+ days since last donation
+    </span>
+  </div>
+
+  {% if eligible %}
+    <div class="eligible-grid">
+      {% for e in eligible %}
+      <div class="eligible-card">
+        <span class="eligible-bt">{{ e.BloodType }}</span>
+        <span class="eligible-count">{{ e.cnt }}</span>
+        <span class="eligible-label">donor{% if e.cnt != 1 %}s{% endif %} ready</span>
+      </div>
+      {% endfor %}
+    </div>
+    <div style="margin-top:1rem;padding-top:.85rem;border-top:1px solid var(--border);">
+      <a href="{{ url_for('donors') }}" class="btn btn-outline btn-sm">Browse All Donors →</a>
+    </div>
+  {% else %}
+    <div class="empty" style="padding:2rem;">
+      <div class="empty-icon">🩸</div>
+      <div style="font-size:.85rem;">No donors are currently eligible to donate.</div>
+    </div>
+  {% endif %}
+</div>
+
+<!-- ── ROW 3: RECENT DONATIONS ── -->
+<div class="card" style="padding:0;">
+  <div style="padding:1.25rem 1.5rem .25rem;">
+    <div class="section-label">
+      <span style="color:var(--red);">🩸</span> Recent Donations
+      <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--text-dim);
+                   background:var(--surface2);border:1px solid var(--border);
+                   padding:.15rem .5rem;border-radius:999px;margin-left:.25rem;">
+        last 10 records
+      </span>
+    </div>
+  </div>
+
+  {% if recent_donations %}
+  <div class="table-wrap" style="border:none;border-radius:0 0 12px 12px;">
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Donor</th>
+          <th>Blood Type</th>
+          <th>Units</th>
+          <th>Received By</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for d in recent_donations %}
+        <tr>
+          <td>
+            <span style="font-family:'DM Mono',monospace;font-size:.82rem;">{{ d.DonationDate }}</span>
+          </td>
+          <td>
+            <span style="font-weight:500;font-size:.875rem;">{{ d.FullName }}</span>
+          </td>
+          <td><span class="bt">{{ d.BloodType }}</span></td>
+          <td>
+            <span style="font-family:'DM Mono',monospace;font-size:.88rem;font-weight:600;color:var(--red);">
+              {{ d.UnitsDonated }}
+            </span>
+            <span style="font-size:.75rem;color:var(--text-dim);"> unit{% if d.UnitsDonated > 1 %}s{% endif %}</span>
+          </td>
+          <td>
+            <span style="font-size:.82rem;color:var(--text-dim);">{{ d.BankName }}</span>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty" style="padding:3rem;">
+    <div class="empty-icon">🩸</div>
+    <div style="font-size:.875rem;">No donation records found.</div>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

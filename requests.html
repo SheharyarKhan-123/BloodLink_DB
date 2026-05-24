@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% block title %}Blood Requests{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-title">Blood Requests</div>
+    <div class="page-sub">
+      {% if role == 'HospitalAdmin' %}Requests submitted by your hospital
+      {% elif role == 'BankAdmin' %}Incoming requests directed to your blood bank
+      {% else %}All blood requests across the system
+      {% endif %}
+    </div>
+  </div>
+  <div style="display:flex;gap:.75rem;align-items:center;">
+    {% if role == 'HospitalAdmin' %}
+      <a href="{{ url_for('new_request') }}" class="btn btn-primary">+ New Request</a>
+    {% endif %}
+  </div>
+</div>
+
+<!-- SUMMARY STATS -->
+{% if requests %}
+{% set pending_count   = requests | selectattr('Status','equalto','Pending')   | list | length %}
+{% set fulfilled_count = requests | selectattr('Status','equalto','Fulfilled') | list | length %}
+{% set cancelled_count = requests | selectattr('Status','equalto','Cancelled') | list | length %}
+{% set critical_count  = requests | selectattr('UrgencyLevel','equalto','Critical') | list | length %}
+<div class="stat-grid" style="margin-bottom:2rem;">
+  <div class="stat-card">
+    <div class="stat-val">{{ requests|length }}</div>
+    <div class="stat-label">Total Requests</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val" style="color:var(--warning);">{{ pending_count }}</div>
+    <div class="stat-label">Pending</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val" style="color:var(--success);">{{ fulfilled_count }}</div>
+    <div class="stat-label">Fulfilled</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val" style="color:#f87171;">{{ critical_count }}</div>
+    <div class="stat-label">Critical Urgency</div>
+  </div>
+</div>
+{% endif %}
+
+<!-- REQUESTS TABLE -->
+<div class="card" style="padding:0;">
+  {% if requests %}
+  <div class="table-wrap" style="border:none;border-radius:12px;">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Hospital</th>
+          <th>Blood Type</th>
+          <th>Units</th>
+          <th>Urgency</th>
+          <th>Status</th>
+          <th>Source Bank</th>
+          <th>Date</th>
+          {% if role == 'BankAdmin' or role == 'HospitalAdmin' %}
+          <th>Actions</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in requests %}
+        <tr style="{% if r.UrgencyLevel == 'Critical' and r.Status == 'Pending' %}background:rgba(200,16,46,.04);{% endif %}">
+          <td>
+            <span style="font-family:'DM Mono',monospace;font-size:.75rem;color:var(--text-dim);">#{{ r.RequestID }}</span>
+          </td>
+          <td>
+            <div style="font-weight:500;font-size:.875rem;">{{ r.HospitalName }}</div>
+          </td>
+          <td><span class="bt">{{ r.BloodType }}</span></td>
+          <td>
+            <span style="font-family:'DM Mono',monospace;font-weight:600;">{{ r.UnitsRequired }}</span>
+            <span style="font-size:.75rem;color:var(--text-dim);"> unit{% if r.UnitsRequired > 1 %}s{% endif %}</span>
+          </td>
+          <td>
+            {% if r.UrgencyLevel == 'Critical' %}
+              <span class="badge badge-red">🔴 Critical</span>
+            {% elif r.UrgencyLevel == 'High' %}
+              <span class="badge badge-yellow">🟡 High</span>
+            {% else %}
+              <span class="badge badge-gray">Normal</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if r.Status == 'Fulfilled' %}
+              <span class="badge badge-green">✓ Fulfilled</span>
+            {% elif r.Status == 'Cancelled' %}
+              <span class="badge badge-gray">✕ Cancelled</span>
+            {% else %}
+              <span class="badge badge-yellow">⏳ Pending</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if r.BankName %}
+              <span style="font-size:.82rem;color:var(--text-dim);">{{ r.BankName }}</span>
+            {% else %}
+              <span style="font-size:.82rem;color:var(--text-dim);font-style:italic;">Unassigned</span>
+            {% endif %}
+          </td>
+          <td>
+            <span style="font-family:'DM Mono',monospace;font-size:.8rem;color:var(--text-dim);">
+              {{ r.RequestDate }}
+            </span>
+          </td>
+
+          {% if role == 'BankAdmin' or role == 'HospitalAdmin' %}
+          <td>
+            <div style="display:flex;gap:.4rem;flex-wrap:wrap;">
+              {% if r.Status == 'Pending' %}
+                {% if role == 'BankAdmin' %}
+                  <form method="POST" action="{{ url_for('fulfill_request', request_id=r.RequestID) }}"
+                        onsubmit="return confirm('Fulfill request #{{ r.RequestID }} for {{ r.UnitsRequired }} unit(s) of {{ r.BloodType }}?')">
+                    <button type="submit" class="btn btn-success btn-sm">✓ Fulfill</button>
+                  </form>
+                {% endif %}
+                {% if role == 'HospitalAdmin' %}
+                  <form method="POST" action="{{ url_for('cancel_request', request_id=r.RequestID) }}"
+                        onsubmit="return confirm('Cancel this request?')">
+                    <button type="submit" class="btn btn-danger btn-sm">✕ Cancel</button>
+                  </form>
+                {% endif %}
+              {% else %}
+                <span style="font-size:.78rem;color:var(--text-dim);padding:.3rem .5rem;">—</span>
+              {% endif %}
+            </div>
+          </td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty" style="padding:4rem;">
+    <div class="empty-icon">📋</div>
+    <div style="font-size:1rem;font-weight:600;margin-bottom:.5rem;color:var(--text);">No requests found</div>
+    <div style="font-size:.875rem;">
+      {% if role == 'HospitalAdmin' %}
+        Submit a new blood request to get started.
+        <br><br>
+        <a href="{{ url_for('new_request') }}" class="btn btn-primary">+ New Request</a>
+      {% elif role == 'BankAdmin' %}
+        No requests are currently directed to your bank.
+      {% else %}
+        No blood requests exist in the system yet.
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+{% if role == 'HospitalAdmin' and requests %}
+<div style="margin-top:1.5rem;display:flex;gap:.75rem;">
+  <a href="{{ url_for('new_request') }}" class="btn btn-primary">+ New Request</a>
+  <a href="{{ url_for('inventory') }}" class="btn btn-outline">Check Inventory</a>
+</div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,365 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+{# ══════════════════════════════════════════════════
+   BANK ADMIN DASHBOARD
+══════════════════════════════════════════════════ #}
+{% if role == 'BankAdmin' %}
+
+<div class="page-header">
+  <div>
+    <div class="page-title">Bank Admin Dashboard</div>
+    <div class="page-sub">
+      {% if stats.bank %}
+        Managing <strong>{{ stats.bank.Name }}</strong> · {{ stats.bank.City }}
+      {% else %}
+        Welcome — set up your blood bank to get started
+      {% endif %}
+    </div>
+  </div>
+  {% if stats.bank %}
+  <a href="{{ url_for('log_donation') }}" class="btn btn-primary">+ Log Donation</a>
+  {% endif %}
+</div>
+
+{% if not stats.bank %}
+  <div class="card" style="text-align:center;padding:3rem 2rem;">
+    <div style="font-size:3rem;margin-bottom:1rem;">🏥</div>
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.25rem;margin-bottom:.5rem;">No Blood Bank Registered</div>
+    <div style="color:var(--text-dim);margin-bottom:1.5rem;">Register your blood bank to start managing inventory and donations.</div>
+    <a href="{{ url_for('add_bank') }}" class="btn btn-primary">Register Blood Bank</a>
+  </div>
+{% else %}
+
+  <!-- KPI ROW -->
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-val">{{ stats.total_units }}</div>
+      <div class="stat-label">Units in Stock</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">{{ stats.donations }}</div>
+      <div class="stat-label">Total Donations</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" style="color:{% if stats.pending_requests > 0 %}#f87171{% else %}var(--success){% endif %}">
+        {{ stats.pending_requests }}
+      </div>
+      <div class="stat-label">Pending Requests</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">{{ stats.global.total_donors }}</div>
+      <div class="stat-label">Registered Donors</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
+
+    <!-- BANK INFO -->
+    <div class="card">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:1rem;">🏥 Your Blood Bank</div>
+      <div style="margin-bottom:1rem;">
+        <div style="font-size:1.1rem;font-weight:600;margin-bottom:.4rem;">{{ stats.bank.Name }}</div>
+        <div style="color:var(--text-dim);font-size:.875rem;margin-bottom:.25rem;">📍 {{ stats.bank.City }}</div>
+        <div style="color:var(--text-dim);font-size:.875rem;margin-bottom:.25rem;">📞 {{ stats.bank.ContactNo }}</div>
+        {% if stats.bank.Address %}
+        <div style="color:var(--text-dim);font-size:.875rem;">🗺 {{ stats.bank.Address }}</div>
+        {% endif %}
+      </div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:1rem;">
+        <a href="{{ url_for('update_inventory') }}" class="btn btn-primary btn-sm">Update Inventory</a>
+        <a href="{{ url_for('blood_requests') }}" class="btn btn-outline btn-sm">View Requests</a>
+      </div>
+    </div>
+
+    <!-- CRITICAL SHORTAGE -->
+    <div class="card">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:1rem;">
+        <span style="color:var(--red)">⚠</span> Critical Shortage Alert
+      </div>
+      {% if stats.global.critical_types %}
+        {% for ct in stats.global.critical_types %}
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:.6rem 0;border-bottom:1px solid var(--border);">
+          <span class="bt">{{ ct.BloodType }}</span>
+          <span style="font-family:'DM Mono',monospace;font-size:.85rem;color:{% if ct.total == 0 %}#f87171{% elif ct.total < 3 %}#fcd34d{% else %}var(--text-dim){% endif %}">
+            {{ ct.total or 0 }} units
+          </span>
+          {% if ct.total == 0 %}<span class="badge badge-red">Critical</span>
+          {% elif ct.total < 3 %}<span class="badge badge-yellow">Low</span>{% endif %}
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty"><div class="empty-icon">✅</div>All blood types well stocked</div>
+      {% endif %}
+    </div>
+
+  </div>
+
+  <!-- QUICK ACTIONS -->
+  <div class="card">
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:1rem;">Quick Actions</div>
+    <div style="display:flex;flex-wrap:wrap;gap:.75rem;">
+      <a href="{{ url_for('log_donation') }}" class="btn btn-primary">+ Log Donation</a>
+      <a href="{{ url_for('blood_requests') }}" class="btn btn-outline">📋 Pending Requests</a>
+      <a href="{{ url_for('update_inventory') }}" class="btn btn-outline">📦 Update Inventory</a>
+      <a href="{{ url_for('inventory') }}" class="btn btn-outline">📊 View Inventory</a>
+      <a href="{{ url_for('donors') }}" class="btn btn-outline">🩸 Browse Donors</a>
+      <a href="{{ url_for('reports') }}" class="btn btn-outline">📈 Reports</a>
+    </div>
+  </div>
+
+{% endif %}
+
+
+{# ══════════════════════════════════════════════════
+   HOSPITAL ADMIN DASHBOARD
+══════════════════════════════════════════════════ #}
+{% elif role == 'HospitalAdmin' %}
+
+<div class="page-header">
+  <div>
+    <div class="page-title">Hospital Dashboard</div>
+    <div class="page-sub">
+      {% if stats.hospital %}
+        Managing <strong>{{ stats.hospital.Name }}</strong> · {{ stats.hospital.City }}
+      {% else %}
+        Welcome — register your hospital to submit blood requests
+      {% endif %}
+    </div>
+  </div>
+  {% if stats.hospital %}
+  <a href="{{ url_for('new_request') }}" class="btn btn-primary">+ New Request</a>
+  {% endif %}
+</div>
+
+{% if not stats.hospital %}
+  <div class="card" style="text-align:center;padding:3rem 2rem;">
+    <div style="font-size:3rem;margin-bottom:1rem;">🏨</div>
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.25rem;margin-bottom:.5rem;">No Hospital Registered</div>
+    <div style="color:var(--text-dim);margin-bottom:1.5rem;">Register your hospital to start requesting blood and tracking fulfillment.</div>
+    <a href="{{ url_for('add_hospital') }}" class="btn btn-primary">Register Hospital</a>
+  </div>
+{% else %}
+
+  <!-- KPI ROW -->
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-val">{{ stats.total_requests }}</div>
+      <div class="stat-label">Total Requests</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" style="color:{% if stats.pending > 0 %}#fcd34d{% else %}var(--text-dim){% endif %}">
+        {{ stats.pending }}
+      </div>
+      <div class="stat-label">Pending</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" style="color:var(--success)">{{ stats.fulfilled }}</div>
+      <div class="stat-label">Fulfilled</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">{{ stats.global.total_banks }}</div>
+      <div class="stat-label">Available Blood Banks</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
+
+    <!-- HOSPITAL INFO -->
+    <div class="card">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:1rem;">🏨 Your Hospital</div>
+      <div style="margin-bottom:1rem;">
+        <div style="font-size:1.1rem;font-weight:600;margin-bottom:.4rem;">{{ stats.hospital.Name }}</div>
+        <div style="color:var(--text-dim);font-size:.875rem;margin-bottom:.25rem;">📍 {{ stats.hospital.City }}</div>
+        <div style="color:var(--text-dim);font-size:.875rem;margin-bottom:.25rem;">📞 {{ stats.hospital.ContactNo }}</div>
+        {% if stats.hospital.Address %}
+        <div style="color:var(--text-dim);font-size:.875rem;">🗺 {{ stats.hospital.Address }}</div>
+        {% endif %}
+      </div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:1rem;">
+        <a href="{{ url_for('new_request') }}" class="btn btn-primary btn-sm">New Blood Request</a>
+        <a href="{{ url_for('blood_requests') }}" class="btn btn-outline btn-sm">My Requests</a>
+      </div>
+    </div>
+
+    <!-- BLOOD AVAILABILITY -->
+    <div class="card">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:1rem;">
+        <span style="color:var(--red)">⚠</span> Low Stock Alert
+      </div>
+      <div style="font-size:.8rem;color:var(--text-dim);margin-bottom:.75rem;">Blood types critically low across all banks</div>
+      {% if stats.global.critical_types %}
+        {% for ct in stats.global.critical_types %}
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:.6rem 0;border-bottom:1px solid var(--border);">
+          <span class="bt">{{ ct.BloodType }}</span>
+          <span style="font-family:'DM Mono',monospace;font-size:.85rem;color:{% if ct.total == 0 %}#f87171{% elif ct.total < 3 %}#fcd34d{% else %}var(--text-dim){% endif %}">
+            {{ ct.total or 0 }} units
+          </span>
+          {% if ct.total == 0 %}<span class="badge badge-red">Critical</span>
+          {% elif ct.total < 3 %}<span class="badge badge-yellow">Low</span>{% endif %}
+        </div>
+        {% endfor %}
+        <div style="font-size:.8rem;color:var(--text-dim);margin-top:.75rem;">
+          Plan requests early for low-stock types.
+        </div>
+      {% else %}
+        <div class="empty"><div class="empty-icon">✅</div>All blood types well stocked</div>
+      {% endif %}
+    </div>
+
+  </div>
+
+  <!-- QUICK ACTIONS -->
+  <div class="card">
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:1rem;">Quick Actions</div>
+    <div style="display:flex;flex-wrap:wrap;gap:.75rem;">
+      <a href="{{ url_for('new_request') }}" class="btn btn-primary">+ New Blood Request</a>
+      <a href="{{ url_for('blood_requests') }}" class="btn btn-outline">📋 My Requests</a>
+      <a href="{{ url_for('banks') }}" class="btn btn-outline">🏥 Blood Banks</a>
+    </div>
+  </div>
+
+{% endif %}
+
+
+{# ══════════════════════════════════════════════════
+   DONOR DASHBOARD
+══════════════════════════════════════════════════ #}
+{% elif role == 'Donor' %}
+
+<div class="page-header">
+  <div>
+    <div class="page-title">Donor Dashboard</div>
+    <div class="page-sub">
+      {% if stats.donor %}
+        Hello, <strong>{{ stats.donor.FullName }}</strong> — thank you for saving lives 🩸
+      {% else %}
+        Welcome — complete your profile to start donating
+      {% endif %}
+    </div>
+  </div>
+  {% if stats.donor and stats.is_eligible %}
+  <a href="{{ url_for('banks') }}" class="btn btn-primary">Find a Blood Bank</a>
+  {% endif %}
+</div>
+
+{% if not stats.donor %}
+  <div class="card" style="text-align:center;padding:3rem 2rem;">
+    <div style="font-size:3rem;margin-bottom:1rem;">🩸</div>
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.25rem;margin-bottom:.5rem;">Complete Your Donor Profile</div>
+    <div style="color:var(--text-dim);margin-bottom:1.5rem;">Set up your profile to track donations and check your eligibility status.</div>
+    <a href="{{ url_for('donor_profile') }}" class="btn btn-primary">Setup Profile</a>
+  </div>
+{% else %}
+
+  <!-- KPI ROW -->
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-val">{{ stats.total_donations }}</div>
+      <div class="stat-label">My Donations</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">
+        <span class="bt">{{ stats.donor.BloodType }}</span>
+      </div>
+      <div class="stat-label">Blood Type</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" style="font-size:1.1rem;">
+        {% if stats.is_eligible %}
+          <span style="color:var(--success)">✓ Eligible</span>
+        {% else %}
+          <span style="color:#f87171">Not Yet</span>
+        {% endif %}
+      </div>
+      <div class="stat-label">Donation Eligibility</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">{{ stats.global.total_donors }}</div>
+      <div class="stat-label">Total Community Donors</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
+
+    <!-- ELIGIBILITY CARD -->
+    <div class="card">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:1rem;">🗓 Donation Status</div>
+      {% if stats.is_eligible %}
+        <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:.75rem;padding:1.25rem;text-align:center;margin-bottom:1rem;">
+          <div style="font-size:2rem;margin-bottom:.5rem;">✅</div>
+          <div style="font-weight:600;color:var(--success);font-size:1rem;">You are eligible to donate!</div>
+          <div style="color:var(--text-dim);font-size:.85rem;margin-top:.4rem;">Visit any registered blood bank to donate.</div>
+        </div>
+        <a href="{{ url_for('banks') }}" class="btn btn-primary" style="width:100%;text-align:center;">Find a Blood Bank</a>
+      {% else %}
+        <div style="background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.25);border-radius:.75rem;padding:1.25rem;text-align:center;margin-bottom:1rem;">
+          <div style="font-size:2rem;margin-bottom:.5rem;">⏳</div>
+          <div style="font-weight:600;color:#f87171;font-size:1rem;">90-day waiting period active</div>
+          <div style="color:var(--text-dim);font-size:.85rem;margin-top:.4rem;">
+            Eligible from <strong>{{ stats.eligible_date }}</strong>
+          </div>
+        </div>
+        {% if stats.last_donation %}
+        <div style="color:var(--text-dim);font-size:.85rem;">Last donation: {{ stats.last_donation }}</div>
+        {% endif %}
+      {% endif %}
+    </div>
+
+    <!-- BLOOD SHORTAGE AWARENESS -->
+    <div class="card">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:1rem;">
+        <span style="color:var(--red)">⚠</span> Types Needed Most
+      </div>
+      <div style="font-size:.8rem;color:var(--text-dim);margin-bottom:.75rem;">Help where it's needed — current critical shortage</div>
+      {% if stats.global.critical_types %}
+        {% for ct in stats.global.critical_types %}
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:.6rem 0;border-bottom:1px solid var(--border);">
+          <span class="bt">{{ ct.BloodType }}</span>
+          <span style="font-family:'DM Mono',monospace;font-size:.85rem;color:{% if ct.total == 0 %}#f87171{% elif ct.total < 3 %}#fcd34d{% else %}var(--text-dim){% endif %}">
+            {{ ct.total or 0 }} units
+          </span>
+          {% if ct.total == 0 %}<span class="badge badge-red">Critical</span>
+          {% elif ct.total < 3 %}<span class="badge badge-yellow">Low</span>{% endif %}
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty"><div class="empty-icon">✅</div>All blood types well stocked</div>
+      {% endif %}
+    </div>
+
+  </div>
+
+  <!-- PROFILE + ACTIONS -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
+    <div class="card">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:1rem;">👤 Your Profile</div>
+      <div style="margin-bottom:1rem;">
+        <div style="font-size:1.05rem;font-weight:600;margin-bottom:.4rem;">{{ stats.donor.FullName }}</div>
+        {% if stats.donor.ContactNo %}
+        <div style="color:var(--text-dim);font-size:.875rem;margin-bottom:.25rem;">📞 {{ stats.donor.ContactNo }}</div>
+        {% endif %}
+        {% if stats.donor.City %}
+        <div style="color:var(--text-dim);font-size:.875rem;">📍 {{ stats.donor.City }}</div>
+        {% endif %}
+      </div>
+      <a href="{{ url_for('donor_profile') }}" class="btn btn-outline btn-sm">Edit Profile</a>
+    </div>
+
+    <div class="card">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:1rem;">Quick Actions</div>
+      <div style="display:flex;flex-direction:column;gap:.6rem;">
+        <a href="{{ url_for('banks') }}" class="btn btn-outline">🏥 Find Blood Banks</a>
+        <a href="{{ url_for('donor_profile') }}" class="btn btn-outline">👤 Edit My Profile</a>
+      </div>
+    </div>
+  </div>
+
+{% endif %}
+
+{% endif %}
+{# end role blocks #}
+
+{% endblock %}

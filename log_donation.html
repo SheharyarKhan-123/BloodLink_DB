@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+{% block title %}Log Donation{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-title">Log Donation</div>
+    <div class="page-sub">Record a new blood donation at <strong>{{ bank.Name }}</strong></div>
+  </div>
+  <a href="{{ url_for('donations') }}" class="btn btn-outline">← Back to Donations</a>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 380px;gap:1.5rem;align-items:start;">
+
+  <!-- FORM CARD -->
+  <div class="card">
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:1.5rem;
+                display:flex;align-items:center;gap:.5rem;">
+      <span style="color:var(--red);">🩸</span> Donation Details
+    </div>
+
+    <form method="POST" action="{{ url_for('log_donation') }}">
+
+      <!-- DONOR SELECT -->
+      <div class="form-group" style="margin-bottom:1.25rem;">
+        <label for="donor_id">Select Eligible Donor</label>
+        {% if donors %}
+          <select name="donor_id" id="donor_id" required onchange="updateDonorInfo(this)">
+            <option value="" disabled selected>— Choose a donor —</option>
+            {% for d in donors %}
+            <option value="{{ d.DonorID }}"
+                    data-blood="{{ d.BloodType }}"
+                    data-last="{{ d.LastDonationDate }}">
+              {{ d.FullName }} — {{ d.BloodType }}
+              (last: {{ d.LastDonationDate }})
+            </option>
+            {% endfor %}
+          </select>
+          <span class="hint">Only donors eligible to donate (90+ days since last donation) are listed.</span>
+        {% else %}
+          <div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);
+                      border-radius:8px;padding:.85rem 1rem;font-size:.875rem;color:#fcd34d;">
+            ⚠ No eligible donors available at this time. Donors must wait 90 days between donations.
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- DONOR INFO PREVIEW -->
+      <div id="donor-preview" style="display:none;background:var(--surface2);border:1px solid var(--border);
+           border-radius:8px;padding:.85rem 1rem;margin-bottom:1.25rem;font-size:.875rem;">
+        <div style="display:flex;align-items:center;gap:.75rem;">
+          <span id="preview-bt" class="bt"></span>
+          <div>
+            <span style="color:var(--text-dim);">Last donation: </span>
+            <span id="preview-last" style="font-family:'DM Mono',monospace;font-size:.8rem;"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-grid" style="margin-bottom:1.25rem;">
+        <!-- UNITS DONATED -->
+        <div class="form-group">
+          <label for="units">Units Donated</label>
+          <select name="units" id="units" required>
+            <option value="1" selected>1 unit (450 ml)</option>
+            <option value="2">2 units (900 ml)</option>
+          </select>
+          <span class="hint">Maximum 2 units per donation session.</span>
+        </div>
+
+        <!-- DONATION DATE -->
+        <div class="form-group">
+          <label for="donation_date">Donation Date</label>
+          <input type="date" name="donation_date" id="donation_date" required
+                 value="{{ today }}" max="{{ today }}">
+        </div>
+      </div>
+
+      <!-- EXPIRY DATE -->
+      <div class="form-group" style="margin-bottom:1.75rem;">
+        <label for="expiry_date">Blood Expiry Date</label>
+        <input type="date" name="expiry_date" id="expiry_date" required
+               value="{{ expiry_default }}">
+        <span class="hint">Whole blood is typically viable for 42 days from collection.</span>
+      </div>
+
+      <!-- SUBMIT -->
+      {% if donors %}
+      <div style="display:flex;gap:.75rem;align-items:center;">
+        <button type="submit" class="btn btn-primary" style="min-width:160px;">
+          ✓ Log Donation
+        </button>
+        <a href="{{ url_for('donations') }}" class="btn btn-outline">Cancel</a>
+      </div>
+      {% else %}
+      <div style="display:flex;gap:.75rem;">
+        <a href="{{ url_for('donors') }}" class="btn btn-outline">Browse Donors</a>
+        <a href="{{ url_for('donations') }}" class="btn btn-outline">Back</a>
+      </div>
+      {% endif %}
+
+    </form>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div style="display:flex;flex-direction:column;gap:1rem;">
+
+    <!-- BANK INFO -->
+    <div class="card card-sm">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;margin-bottom:.85rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;">
+        Receiving Bank
+      </div>
+      <div style="font-size:1rem;font-weight:600;margin-bottom:.35rem;">{{ bank.Name }}</div>
+      <div style="font-size:.82rem;color:var(--text-dim);">📍 {{ bank.City }}</div>
+      <div style="font-size:.82rem;color:var(--text-dim);margin-top:.2rem;">📞 {{ bank.ContactNo }}</div>
+    </div>
+
+    <!-- ELIGIBLE DONORS COUNT -->
+    <div class="card card-sm">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;margin-bottom:.85rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;">
+        Eligible Donors
+      </div>
+      <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--red);">
+        {{ donors|length if donors else 0 }}
+      </div>
+      <div style="font-size:.8rem;color:var(--text-dim);margin-top:.2rem;">donors ready to donate today</div>
+    </div>
+
+    <!-- QUICK NOTES -->
+    <div class="card card-sm" style="background:rgba(200,16,46,.05);border-color:var(--red-dim);">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;margin-bottom:.75rem;color:var(--red);">
+        ⚡ Logging Notes
+      </div>
+      <ul style="list-style:none;display:flex;flex-direction:column;gap:.5rem;font-size:.8rem;color:var(--text-dim);">
+        <li>→ Inventory is updated automatically</li>
+        <li>→ Donor's last donation date is refreshed</li>
+        <li>→ Standard expiry is 42 days</li>
+        <li>→ Maximum 2 units per session</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Set today and auto-expiry
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth()+1).padStart(2,'0');
+  const dd = String(today.getDate()).padStart(2,'0');
+  const todayStr = `${yyyy}-${mm}-${dd}`;
+
+  const donationDateInput = document.getElementById('donation_date');
+  const expiryDateInput   = document.getElementById('expiry_date');
+
+  if (!donationDateInput.value) donationDateInput.value = todayStr;
+  if (!expiryDateInput.value) {
+    const expiry = new Date(today);
+    expiry.setDate(expiry.getDate() + 42);
+    expiryDateInput.value = expiry.toISOString().split('T')[0];
+  }
+
+  donationDateInput.addEventListener('change', function() {
+    const base = new Date(this.value);
+    base.setDate(base.getDate() + 42);
+    expiryDateInput.value = base.toISOString().split('T')[0];
+  });
+
+  function updateDonorInfo(select) {
+    const opt = select.options[select.selectedIndex];
+    if (!opt.value) return;
+    const preview = document.getElementById('donor-preview');
+    document.getElementById('preview-bt').textContent   = opt.dataset.blood;
+    document.getElementById('preview-last').textContent = opt.dataset.last;
+    preview.style.display = 'flex';
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block title %}My Donor Profile{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-title">My Donor Profile</div>
+    <div class="page-sub">
+      {% if donor %}Update your information{% else %}Complete your profile to start donating{% endif %}
+    </div>
+  </div>
+  {% if donor %}
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+      <span class="bt" style="font-size: 1rem; padding: 0.3rem 0.75rem;">{{ donor.BloodType }}</span>
+      {% if donor.EligibilityStatus is defined %}
+        <span class="badge {% if donor.EligibilityStatus == 'Eligible' %}badge-green{% else %}badge-yellow{% endif %}">
+          {{ donor.EligibilityStatus }}
+        </span>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+
+<!-- Status card if profile exists -->
+{% if donor %}
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+  <div class="stat-card">
+    <div class="stat-val">{{ donor.BloodType }}</div>
+    <div class="stat-label">Blood Type</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val" style="font-size: 1.2rem; padding-top: 0.3rem;">{{ donor.LastDonationDate }}</div>
+    <div class="stat-label">Last Donation</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val" style="font-size: 1.4rem; padding-top: 0.2rem; color: var(--text);">{{ donor.ContactNo }}</div>
+    <div class="stat-label">Contact</div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Profile Form -->
+<div class="card" style="max-width: 780px;">
+  {% if not donor %}
+  <div style="padding: 0.6rem 1rem; background: rgba(56,189,248,.07); border: 1px solid rgba(56,189,248,.2); border-radius: 8px; font-size: 0.85rem; color: #7dd3fc; margin-bottom: 1.5rem;">
+    ℹ You haven't set up your donor profile yet. Fill in the form below to get started.
+  </div>
+  {% endif %}
+
+  <form method="POST">
+    <div class="form-grid">
+
+      <div class="form-group" style="grid-column: 1 / -1;">
+        <label for="full_name">Full Name</label>
+        <input
+          type="text"
+          id="full_name"
+          name="full_name"
+          placeholder="e.g. Muhammad Ali Khan"
+          value="{{ donor.FullName if donor else '' }}"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="cnic">CNIC</label>
+        <input
+          type="text"
+          id="cnic"
+          name="cnic"
+          placeholder="XXXXX-XXXXXXX-X"
+          value="{{ donor.CNIC if donor else '' }}"
+          pattern="^[0-9]{5}-[0-9]{7}-[0-9]$"
+          title="Format: XXXXX-XXXXXXX-X"
+          required
+          style="font-family: 'DM Mono', monospace;"
+        >
+        <span class="hint">Format: 12345-1234567-1</span>
+      </div>
+
+      <div class="form-group">
+        <label for="contact">Contact Number</label>
+        <input
+          type="text"
+          id="contact"
+          name="contact"
+          placeholder="0XXX-XXXXXXX"
+          value="{{ donor.ContactNo if donor else '' }}"
+          pattern="^0[0-9]{3}-[0-9]{7}$"
+          title="Format: 0XXX-XXXXXXX"
+          required
+          style="font-family: 'DM Mono', monospace;"
+        >
+        <span class="hint">Format: 0321-1234567</span>
+      </div>
+
+      <div class="form-group">
+        <label for="blood_type">Blood Type</label>
+        <select id="blood_type" name="blood_type" required>
+          {% for bt in blood_types %}
+            <option value="{{ bt }}" {% if donor and donor.BloodType == bt %}selected{% endif %}>{{ bt }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="dob">Date of Birth</label>
+        <input
+          type="date"
+          id="dob"
+          name="dob"
+          value="{{ donor.DateOfBirth if donor else '' }}"
+          max="{{ today if today else '' }}"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="last_donation">Last Donation Date</label>
+        <input
+          type="date"
+          id="last_donation"
+          name="last_donation"
+          value="{{ donor.LastDonationDate if donor else '' }}"
+          required
+        >
+        <span class="hint">You become eligible again 90 days after this date</span>
+      </div>
+
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 0.75rem; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border);">
+      <button type="submit" class="btn btn-primary">
+        {% if donor %}✓ Update Profile{% else %}+ Create Profile{% endif %}
+      </button>
+      <a href="{{ url_for('dashboard') }}" class="btn btn-outline">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

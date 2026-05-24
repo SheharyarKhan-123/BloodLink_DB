@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block title %}My Bank{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-title">My Bank</div>
+    <div class="page-sub">Manage your blood bank details and inventory</div>
+  </div>
+  {% if not banks %}
+    <a href="{{ url_for('add_bank') }}" class="btn btn-primary">+ Register Bank</a>
+  {% endif %}
+</div>
+
+{% if banks %}
+  {% set bank = banks[0] %}
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
+
+    <!-- BANK DETAILS -->
+    <div class="card">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:1.25rem;">🏥 Bank Details</div>
+      <div style="display:flex;flex-direction:column;gap:.6rem;margin-bottom:1.5rem;">
+        <div>
+          <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-bottom:.2rem;">Name</div>
+          <div style="font-weight:600;font-size:1rem;">{{ bank.Name }}</div>
+        </div>
+        <div>
+          <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-bottom:.2rem;">City</div>
+          <div style="font-size:.9rem;">📍 {{ bank.City }}</div>
+        </div>
+        <div>
+          <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-bottom:.2rem;">Address</div>
+          <div style="font-size:.9rem;color:var(--text-dim);">{{ bank.Address or '—' }}</div>
+        </div>
+        <div>
+          <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-bottom:.2rem;">Contact</div>
+          <div style="font-family:'DM Mono',monospace;font-size:.88rem;">📞 {{ bank.ContactNo }}</div>
+        </div>
+        <div>
+          <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-bottom:.2rem;">Admin Email</div>
+          <div style="font-family:'DM Mono',monospace;font-size:.8rem;color:var(--text-dim);">✉ {{ bank.AdminEmail }}</div>
+        </div>
+      </div>
+      <div style="border-top:1px solid var(--border);padding-top:1rem;">
+        <a href="{{ url_for('edit_bank', bank_id=bank.BankID) }}" class="btn btn-primary btn-sm">✎ Edit Details</a>
+      </div>
+    </div>
+
+    <!-- STOCK SUMMARY -->
+    <div class="card">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:1.25rem;">📦 Stock Summary</div>
+      <div style="text-align:center;margin-bottom:1.25rem;">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:2.5rem;
+          color:{% if bank.TotalUnits == 0 %}#f87171{% elif bank.TotalUnits < 10 %}#fcd34d{% else %}var(--success){% endif %}">
+          {{ bank.TotalUnits }}
+        </div>
+        <div style="font-size:.8rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;">total units in stock</div>
+        <div style="margin-top:.5rem;">
+          {% if bank.TotalUnits == 0 %}
+            <span class="badge badge-red">No Stock</span>
+          {% elif bank.TotalUnits < 10 %}
+            <span class="badge badge-yellow">Low Stock</span>
+          {% else %}
+            <span class="badge badge-green">Well Stocked</span>
+          {% endif %}
+        </div>
+      </div>
+      <div style="border-top:1px solid var(--border);padding-top:1rem;display:flex;gap:.6rem;flex-wrap:wrap;">
+        <a href="{{ url_for('update_inventory') }}" class="btn btn-primary btn-sm">Update Inventory</a>
+        <a href="{{ url_for('inventory') }}" class="btn btn-outline btn-sm">View Full Inventory</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- QUICK ACTIONS -->
+  <div class="card">
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:1rem;">Quick Actions</div>
+    <div style="display:flex;flex-wrap:wrap;gap:.75rem;">
+      <a href="{{ url_for('log_donation') }}" class="btn btn-primary">+ Log Donation</a>
+      <a href="{{ url_for('blood_requests') }}" class="btn btn-outline">📋 View Requests</a>
+      <a href="{{ url_for('update_inventory') }}" class="btn btn-outline">📦 Update Inventory</a>
+      <a href="{{ url_for('donors') }}" class="btn btn-outline">🩸 Browse Donors</a>
+    </div>
+  </div>
+
+{% else %}
+  <div class="card" style="text-align:center;padding:3rem 2rem;">
+    <div style="font-size:3rem;margin-bottom:1rem;">🏥</div>
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.25rem;margin-bottom:.5rem;">No Blood Bank Registered</div>
+    <div style="color:var(--text-dim);margin-bottom:1.5rem;">Register your blood bank to start managing inventory and donations.</div>
+    <a href="{{ url_for('add_bank') }}" class="btn btn-primary">Register Blood Bank</a>
+  </div>
+{% endif %}
+
+{% endblock %}

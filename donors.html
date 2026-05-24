@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Donors{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-title">Donors</div>
+    <div class="page-sub">Registered blood donors across the network</div>
+  </div>
+  {% if session.role == 'Donor' %}
+    <a href="{{ url_for('donor_profile') }}" class="btn btn-primary">Edit My Profile</a>
+  {% endif %}
+</div>
+
+<!-- Filter Bar -->
+<form method="GET" style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+  <div class="form-group" style="margin: 0; flex: 1; min-width: 200px; max-width: 300px;">
+    <select name="blood_type" id="blood_type" onchange="this.form.submit()" style="width: 100%;">
+      <option value="">— All Blood Types —</option>
+      {% for bt in blood_types %}
+        <option value="{{ bt }}" {% if selected == bt %}selected{% endif %}>{{ bt }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  {% if selected %}
+    <a href="{{ url_for('donors') }}" class="btn btn-outline btn-sm">✕ Clear Filter</a>
+  {% endif %}
+  <span style="font-size: 0.8rem; color: var(--text-dim); margin-left: auto;">
+    {{ donors|length if donors else 0 }} donor{{ 's' if (donors|length) != 1 else '' }} found
+  </span>
+</form>
+
+<!-- Table -->
+{% if donors %}
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Blood Type</th>
+        <th>CNIC</th>
+        <th>Contact</th>
+        <th>Date of Birth</th>
+        <th>Last Donation</th>
+        <th>Eligibility</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for donor in donors %}
+      <tr>
+        <td style="font-weight: 500;">{{ donor.FullName }}</td>
+        <td><span class="bt">{{ donor.BloodType }}</span></td>
+        <td style="font-family: 'DM Mono', monospace; font-size: 0.8rem; color: var(--text-dim);">{{ donor.CNIC }}</td>
+        <td style="font-family: 'DM Mono', monospace; font-size: 0.8rem;">{{ donor.ContactNo }}</td>
+        <td style="color: var(--text-dim); font-size: 0.85rem;">{{ donor.DateOfBirth }}</td>
+        <td style="font-size: 0.85rem;">
+          {% if donor.LastDonationDate %}
+            {{ donor.LastDonationDate }}
+          {% else %}
+            <span class="badge badge-gray">N/A</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if donor.EligibilityStatus == 'Eligible' %}
+            <span class="badge badge-green">✓ Eligible</span>
+          {% else %}
+            <span class="badge badge-yellow">Waiting</span>
+          {% endif %}
+        </td>
+        <td style="font-size: 0.8rem; color: var(--text-dim); font-family: 'DM Mono', monospace;">{{ donor.Email }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% else %}
+<div class="empty">
+  <div class="empty-icon">🩸</div>
+  <div style="font-size: 1rem; margin-bottom: 0.4rem; color: var(--text);">No donors found</div>
+  <div style="font-size: 0.85rem;">
+    {% if selected %}No donors registered with blood type <span class="bt">{{ selected }}</span>.{% else %}No donors have registered yet.{% endif %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}

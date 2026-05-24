@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% block title %}Hospitals{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-title">Hospitals</div>
+    <div class="page-sub">All registered hospitals in the BloodLink network</div>
+  </div>
+  <div style="display:flex;gap:.75rem;align-items:center;">
+    {% if session.role == 'HospitalAdmin' %}
+      <a href="{{ url_for('add_hospital') }}" class="btn btn-primary">+ Register Hospital</a>
+    {% endif %}
+  </div>
+</div>
+
+<!-- SUMMARY STAT -->
+{% if hospitals %}
+<div class="stat-grid" style="margin-bottom:2rem;">
+  <div class="stat-card">
+    <div class="stat-val">{{ hospitals|length }}</div>
+    <div class="stat-label">Registered Hospitals</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val" style="font-size:1.4rem;">
+      {{ hospitals|map(attribute='City')|list|unique|list|length }}
+    </div>
+    <div class="stat-label">Cities Covered</div>
+  </div>
+</div>
+{% endif %}
+
+<!-- HOSPITALS TABLE -->
+<div class="card" style="padding:0;">
+  {% if hospitals %}
+  <div class="table-wrap" style="border:none;border-radius:12px;">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Hospital Name</th>
+          <th>City</th>
+          <th>Address</th>
+          <th>Contact</th>
+          <th>Admin Email</th>
+          {% if session.role == 'HospitalAdmin' %}
+          <th>Actions</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for h in hospitals %}
+        <tr>
+          <td>
+            <span style="font-family:'DM Mono',monospace;font-size:.75rem;color:var(--text-dim);">
+              #{{ h.HospitalID }}
+            </span>
+          </td>
+          <td>
+            <div style="font-weight:600;font-size:.9rem;">{{ h.Name }}</div>
+          </td>
+          <td>
+            <span style="font-size:.85rem;color:var(--text-dim);">📍 {{ h.City }}</span>
+          </td>
+          <td>
+            <span style="font-size:.82rem;color:var(--text-dim);max-width:220px;display:block;
+                         white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+                  title="{{ h.Address }}">
+              {{ h.Address }}
+            </span>
+          </td>
+          <td>
+            <span style="font-family:'DM Mono',monospace;font-size:.82rem;">{{ h.ContactNo }}</span>
+          </td>
+          <td>
+            <span style="font-family:'DM Mono',monospace;font-size:.78rem;color:var(--text-dim);">
+              {{ h.AdminEmail }}
+            </span>
+          </td>
+          {% if session.role == 'HospitalAdmin' %}
+          <td>
+            {% if h.AdminUserID == session.user_id %}
+              <a href="{{ url_for('edit_hospital', hospital_id=h.HospitalID) }}"
+                 class="btn btn-outline btn-sm">✎ Edit</a>
+            {% else %}
+              <span style="font-size:.78rem;color:var(--text-dim);padding:.3rem .5rem;">—</span>
+            {% endif %}
+          </td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty" style="padding:4rem;">
+    <div class="empty-icon">🏨</div>
+    <div style="font-size:1rem;font-weight:600;margin-bottom:.5rem;color:var(--text);">No hospitals registered</div>
+    <div style="font-size:.875rem;color:var(--text-dim);">
+      {% if session.role == 'HospitalAdmin' %}
+        Register your hospital to start submitting blood requests.
+        <br><br>
+        <a href="{{ url_for('add_hospital') }}" class="btn btn-primary">+ Register Hospital</a>
+      {% else %}
+        No hospitals have been added to the network yet.
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+{% if session.role == 'HospitalAdmin' and hospitals %}
+<div style="margin-top:1.5rem;display:flex;gap:.75rem;">
+  <a href="{{ url_for('add_hospital') }}" class="btn btn-primary">+ Register Hospital</a>
+  <a href="{{ url_for('new_request') }}" class="btn btn-outline">New Blood Request</a>
+</div>
+{% endif %}
+
+{% endblock %}

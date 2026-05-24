@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Blood Banks{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-title">Blood Banks</div>
+    <div class="page-sub">
+      {% if session.role == 'Donor' %}
+        Find a nearby blood bank to make your donation
+      {% else %}
+        All registered blood banks across the network
+      {% endif %}
+    </div>
+  </div>
+  {% if session.role == 'BankAdmin' %}
+    <a href="{{ url_for('add_bank') }}" class="btn btn-primary">+ Register Bank</a>
+  {% endif %}
+</div>
+
+{% if banks %}
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.25rem;">
+  {% for bank in banks %}
+  <div class="card" style="display:flex;flex-direction:column;gap:1rem;">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.75rem;">
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:.2rem;">{{ bank.Name }}</div>
+        <div style="color:var(--text-dim);font-size:.85rem;">📍 {{ bank.City }}</div>
+      </div>
+      {% if session.role != 'Donor' %}
+      <div style="text-align:right;flex-shrink:0;">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;color:{% if bank.TotalUnits == 0 %}#f87171{% elif bank.TotalUnits < 10 %}#fcd34d{% else %}var(--success){% endif %}">
+          {{ bank.TotalUnits }}
+        </div>
+        <div style="font-size:.7rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;">units in stock</div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Details -->
+    <div style="display:flex;flex-direction:column;gap:.3rem;font-size:.85rem;color:var(--text-dim);border-top:1px solid var(--border);padding-top:.75rem;">
+      {% if bank.Address %}
+      <div>🗺 {{ bank.Address }}</div>
+      {% endif %}
+      <div>📞 {{ bank.ContactNo }}</div>
+      {% if session.role != 'Donor' %}
+      <div style="font-family:'DM Mono',monospace;font-size:.78rem;">✉ {{ bank.AdminEmail }}</div>
+      {% endif %}
+    </div>
+
+    <!-- Stock badge — hidden from donors -->
+    {% if session.role != 'Donor' %}
+    <div>
+      {% if bank.TotalUnits == 0 %}
+        <span class="badge badge-red">No Stock</span>
+      {% elif bank.TotalUnits < 10 %}
+        <span class="badge badge-yellow">Low Stock</span>
+      {% else %}
+        <span class="badge badge-green">Well Stocked</span>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Actions -->
+    {% if session.role == 'BankAdmin' %}
+    <div style="display:flex;gap:.6rem;margin-top:auto;padding-top:.5rem;border-top:1px solid var(--border);">
+      <a href="{{ url_for('edit_bank', bank_id=bank.BankID) }}" class="btn btn-outline btn-sm">Edit</a>
+      <a href="{{ url_for('update_inventory') }}" class="btn btn-outline btn-sm">Update Inventory</a>
+    </div>
+    {% endif %}
+
+  </div>
+  {% endfor %}
+</div>
+
+{% else %}
+<div class="empty">
+  <div class="empty-icon">🏥</div>
+  <div style="font-size:1rem;margin-bottom:.4rem;color:var(--text);">No blood banks registered yet</div>
+  {% if session.role == 'BankAdmin' %}
+  <div style="font-size:.85rem;margin-bottom:1.25rem;">Be the first to register your blood bank.</div>
+  <a href="{{ url_for('add_bank') }}" class="btn btn-primary">Register Blood Bank</a>
+  {% endif %}
+</div>
+{% endif %}
+
+{% endblock %}

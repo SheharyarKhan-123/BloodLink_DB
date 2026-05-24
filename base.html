@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}BloodLink{% endblock %} — BloodLink</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --red:       #c8102e;
+      --red-dim:   #8b0d20;
+      --red-glow:  rgba(200,16,46,0.18);
+      --bg:        #0b0c0e;
+      --surface:   #111316;
+      --surface2:  #181b1f;
+      --border:    #222529;
+      --muted:     #3a3d42;
+      --text:      #e8e9eb;
+      --text-dim:  #8a8d93;
+      --success:   #22c55e;
+      --warning:   #f59e0b;
+      --info:      #38bdf8;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 15px; scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(11,12,14,0.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem; height: 58px;
+    }
+    .nav-brand {
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.25rem;
+      color: var(--text); text-decoration: none; letter-spacing: -0.5px;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .nav-brand span { color: var(--red); }
+    .nav-brand .drop {
+      width: 8px; height: 12px; background: var(--red);
+      clip-path: polygon(50% 0%,100% 40%,75% 40%,75% 100%,25% 100%,25% 40%,0% 40%);
+      display: inline-block;
+    }
+    .nav-links { display: flex; align-items: center; gap: 0.25rem; }
+    .nav-links a {
+      color: var(--text-dim); text-decoration: none; font-size: 0.875rem;
+      padding: 0.35rem 0.75rem; border-radius: 6px; transition: all .2s;
+    }
+    .nav-links a:hover { color: var(--text); background: var(--surface2); }
+    .nav-links a.active { color: var(--text); background: var(--surface2); }
+    .nav-pill {
+      font-family: 'DM Mono', monospace; font-size: 0.7rem;
+      background: var(--red-glow); border: 1px solid var(--red-dim);
+      color: var(--red); padding: 0.2rem 0.6rem; border-radius: 999px;
+      text-decoration: none;
+    }
+    .nav-right { display: flex; align-items: center; gap: 0.75rem; }
+    .nav-email { font-size: 0.8rem; color: var(--text-dim); font-family: 'DM Mono', monospace; }
+    .btn-logout {
+      background: transparent; border: 1px solid var(--border);
+      color: var(--text-dim); padding: 0.3rem 0.85rem;
+      border-radius: 6px; font-size: 0.8rem; cursor: pointer;
+      text-decoration: none; transition: all .2s;
+    }
+    .btn-logout:hover { border-color: var(--red); color: var(--red); }
+
+    /* ── FLASH ── */
+    .flashes { padding: 0.75rem 2rem 0; display: flex; flex-direction: column; gap: 0.5rem; }
+    .flash {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.65rem 1rem; border-radius: 8px; font-size: 0.875rem;
+      border-left: 3px solid;
+    }
+    .flash.success { background: rgba(34,197,94,.08); border-color: var(--success); color: #86efac; }
+    .flash.danger   { background: rgba(200,16,46,.1);  border-color: var(--red);     color: #fca5a5; }
+    .flash.warning  { background: rgba(245,158,11,.08);border-color: var(--warning); color: #fcd34d; }
+    .flash.info     { background: rgba(56,189,248,.08); border-color: var(--info);   color: #7dd3fc; }
+    .flash::before { font-size: 1rem; }
+    .flash.success::before { content: '✓'; }
+    .flash.danger::before  { content: '✕'; }
+    .flash.warning::before { content: '!'; }
+    .flash.info::before    { content: 'i'; }
+
+    /* ── LAYOUT ── */
+    main { flex: 1; padding: 2rem; max-width: 1280px; width: 100%; margin: 0 auto; }
+    .page-header {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      margin-bottom: 2rem; padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .page-title { font-family: 'Syne', sans-serif; font-size: 1.65rem; font-weight: 700; }
+    .page-sub { color: var(--text-dim); font-size: 0.85rem; margin-top: 0.2rem; }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem;
+    }
+    .card-sm { padding: 1rem 1.25rem; }
+
+    /* ── STAT CARDS ── */
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.25rem 1.5rem;
+      position: relative; overflow: hidden;
+    }
+    .stat-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: var(--red);
+    }
+    .stat-val { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--red); }
+    .stat-label { color: var(--text-dim); font-size: 0.8rem; margin-top: 0.25rem; text-transform: uppercase; letter-spacing: 0.06em; }
+
+    /* ── TABLE ── */
+    .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    thead { background: var(--surface2); }
+    th { padding: 0.75rem 1rem; text-align: left; font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.07em; font-weight: 500; white-space: nowrap; }
+    td { padding: 0.75rem 1rem; border-top: 1px solid var(--border); vertical-align: middle; }
+    tr:hover td { background: var(--surface2); }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.55rem 1.1rem; border-radius: 7px; font-size: 0.875rem;
+      font-weight: 500; cursor: pointer; border: none; text-decoration: none;
+      transition: all .2s; font-family: inherit;
+    }
+    .btn-primary { background: var(--red); color: #fff; }
+    .btn-primary:hover { background: #e01030; }
+    .btn-outline {
+      background: transparent; color: var(--text-dim);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { border-color: var(--muted); color: var(--text); }
+    .btn-sm { padding: 0.3rem 0.7rem; font-size: 0.8rem; }
+    .btn-danger { background: rgba(200,16,46,.15); color: #f87171; border: 1px solid var(--red-dim); }
+    .btn-danger:hover { background: var(--red); color: #fff; }
+    .btn-success { background: rgba(34,197,94,.12); color: #86efac; border: 1px solid rgba(34,197,94,.3); }
+    .btn-success:hover { background: #22c55e; color: #0b0c0e; }
+
+    /* ── BADGES ── */
+    .badge {
+      font-family: 'DM Mono', monospace; font-size: 0.68rem;
+      padding: 0.2rem 0.55rem; border-radius: 999px;
+      font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .badge-red      { background: rgba(200,16,46,.15); color: #f87171; border: 1px solid var(--red-dim); }
+    .badge-green    { background: rgba(34,197,94,.1);  color: #86efac; border: 1px solid rgba(34,197,94,.25); }
+    .badge-yellow   { background: rgba(245,158,11,.1); color: #fcd34d; border: 1px solid rgba(245,158,11,.3); }
+    .badge-blue     { background: rgba(56,189,248,.1); color: #7dd3fc; border: 1px solid rgba(56,189,248,.25); }
+    .badge-gray     { background: var(--surface2); color: var(--text-dim); border: 1px solid var(--border); }
+
+    /* ── BLOOD TYPE BADGE ── */
+    .bt {
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.8rem;
+      background: var(--red-glow); border: 1px solid var(--red-dim);
+      color: var(--red); padding: 0.2rem 0.55rem; border-radius: 6px;
+      letter-spacing: 0.03em;
+    }
+
+    /* ── FORMS ── */
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+    label { font-size: 0.8rem; color: var(--text-dim); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+    input, select, textarea {
+      background: var(--bg); border: 1px solid var(--border);
+      color: var(--text); padding: 0.6rem 0.85rem; border-radius: 7px;
+      font-size: 0.9rem; font-family: inherit; transition: border-color .2s;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none; border-color: var(--red); box-shadow: 0 0 0 3px var(--red-glow);
+    }
+    select option { background: var(--surface); }
+    .hint { font-size: 0.75rem; color: var(--text-dim); }
+
+    /* ── EMPTY STATE ── */
+    .empty { text-align: center; padding: 3rem; color: var(--text-dim); }
+    .empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; opacity: 0.4; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border); padding: 1rem 2rem;
+      text-align: center; font-size: 0.75rem; color: var(--muted);
+      font-family: 'DM Mono', monospace;
+    }
+  </style>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+{% if session.user_id %}
+<nav>
+  <a href="{{ url_for('dashboard') }}" class="nav-brand">
+    <span class="drop"></span>Blood<span>Link</span>
+  </a>
+  <div class="nav-links">
+    <a href="{{ url_for('dashboard') }}" {% if request.endpoint == 'dashboard' %}class="active"{% endif %}>Dashboard</a>
+
+    {# ── Donor: minimal set ── #}
+    {% if session.role == 'Donor' %}
+      <a href="{{ url_for('banks') }}" {% if request.endpoint in ['banks'] %}class="active"{% endif %}>Banks</a>
+
+    {# ── BankAdmin: full operational set ── #}
+    {% elif session.role == 'BankAdmin' %}
+      <a href="{{ url_for('donors') }}" {% if request.endpoint in ['donors','donor_profile'] %}class="active"{% endif %}>Donors</a>
+      <a href="{{ url_for('banks') }}" {% if request.endpoint in ['banks','add_bank','edit_bank'] %}class="active"{% endif %}>My Bank</a>
+      <a href="{{ url_for('inventory') }}" {% if request.endpoint in ['inventory','update_inventory'] %}class="active"{% endif %}>Inventory</a>
+      <a href="{{ url_for('donations') }}" {% if request.endpoint in ['donations','log_donation'] %}class="active"{% endif %}>Donations</a>
+      <a href="{{ url_for('blood_requests') }}" {% if request.endpoint in ['blood_requests','new_request'] %}class="active"{% endif %}>Requests</a>
+      <a href="{{ url_for('reports') }}" {% if request.endpoint == 'reports' %}class="active"{% endif %}>Reports</a>
+
+    {# ── HospitalAdmin: request-focused set ── #}
+    {% elif session.role == 'HospitalAdmin' %}
+      <a href="{{ url_for('banks') }}" {% if request.endpoint in ['banks'] %}class="active"{% endif %}>Banks</a>
+      <a href="{{ url_for('hospitals') }}" {% if request.endpoint in ['hospitals','add_hospital','edit_hospital'] %}class="active"{% endif %}>My Hospital</a>
+      <a href="{{ url_for('blood_requests') }}" {% if request.endpoint in ['blood_requests','new_request'] %}class="active"{% endif %}>Requests</a>
+    {% endif %}
+
+  </div>
+  <div class="nav-right">
+    <span class="nav-pill">{{ session.role }}</span>
+    <span class="nav-email">{{ session.email }}</span>
+    <a href="{{ url_for('logout') }}" class="btn-logout">Log out</a>
+  </div>
+</nav>
+{% endif %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flashes">
+      {% for cat, msg in messages %}
+        <div class="flash {{ cat }}">{{ msg }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<main>{% block content %}{% endblock %}</main>
+
+<footer>BloodLink — Centralized Blood Bank &amp; Donor Management System &copy; 2026</footer>
+</body>
+</html>

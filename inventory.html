@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Blood Inventory{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-title">Blood Inventory</div>
+    <div class="page-sub">Current stock levels across all registered blood banks</div>
+  </div>
+  {% if session.role == 'BankAdmin' %}
+    <a href="{{ url_for('update_inventory') }}" class="btn btn-primary">+ Update Inventory</a>
+  {% endif %}
+</div>
+
+<!-- Summary grid by blood type -->
+{% if inventory %}
+  {% set type_totals = {} %}
+  {% for row in inventory %}
+    {% if row.BloodType not in type_totals %}
+      {% set _ = type_totals.update({row.BloodType: 0}) %}
+    {% endif %}
+    {% set _ = type_totals.update({row.BloodType: type_totals[row.BloodType] + row.UnitsAvailable}) %}
+  {% endfor %}
+
+  <div class="stat-grid" style="margin-bottom: 2rem;">
+    {% for bt, total in type_totals.items() %}
+    <div class="stat-card" style="{% if total < 5 %}border-color: var(--red-dim); box-shadow: 0 0 0 1px var(--red-dim);{% elif total < 15 %}border-color: rgba(245,158,11,.4);{% endif %}">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+        <span class="bt">{{ bt }}</span>
+        {% if total < 5 %}
+          <span class="badge badge-red">Critical</span>
+        {% elif total < 15 %}
+          <span class="badge badge-yellow">Low</span>
+        {% else %}
+          <span class="badge badge-green">OK</span>
+        {% endif %}
+      </div>
+      <div class="stat-val">{{ total }}</div>
+      <div class="stat-label">Total Units</div>
+    </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<!-- Detailed table -->
+{% if inventory %}
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Blood Bank</th>
+        <th>City</th>
+        <th>Blood Type</th>
+        <th>Units Available</th>
+        <th>Last Updated</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in inventory %}
+      <tr>
+        <td>
+          {% if loop.first or row.BankName != inventory[loop.index0 - 1].BankName %}
+            <span style="font-weight: 600; color: var(--text);">{{ row.BankName }}</span>
+          {% else %}
+            <span style="color: transparent; user-select: none;">—</span>
+          {% endif %}
+        </td>
+        <td style="color: var(--text-dim); font-size: 0.85rem;">{{ row.City }}</td>
+        <td><span class="bt">{{ row.BloodType }}</span></td>
+        <td>
+          <span style="font-family: 'Syne', sans-serif; font-weight: 700;
+            {% if row.UnitsAvailable < 5 %}color: #f87171;{% elif row.UnitsAvailable < 15 %}color: #fcd34d;{% else %}color: var(--success);{% endif %}
+            font-size: 1.05rem;">
+            {{ row.UnitsAvailable }}
+          </span>
+          <span style="font-size: 0.75rem; color: var(--text-dim); margin-left: 0.25rem;">units</span>
+        </td>
+        <td style="font-size: 0.82rem; color: var(--text-dim); font-family: 'DM Mono', monospace;">{{ row.LastUpdated }}</td>
+        <td>
+          {% if row.UnitsAvailable == 0 %}
+            <span class="badge badge-red">Out of Stock</span>
+          {% elif row.UnitsAvailable < 5 %}
+            <span class="badge badge-red">Critical</span>
+          {% elif row.UnitsAvailable < 15 %}
+            <span class="badge badge-yellow">Low</span>
+          {% else %}
+            <span class="badge badge-green">Adequate</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% else %}
+<div class="empty">
+  <div class="empty-icon">🏥</div>
+  <div style="font-size: 1rem; margin-bottom: 0.4rem; color: var(--text);">No inventory records</div>
+  <div style="font-size: 0.85rem;">Blood banks haven't logged any inventory yet.</div>
+  {% if session.role == 'BankAdmin' %}
+    <div style="margin-top: 1rem;">
+      <a href="{{ url_for('update_inventory') }}" class="btn btn-primary btn-sm">+ Add Inventory</a>
+    </div>
+  {% endif %}
+</div>
+{% endif %}
+
+<!-- Legend -->
+<div style="display: flex; align-items: center; gap: 1rem; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border); flex-wrap: wrap;">
+  <span style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em;">Legend</span>
+  <span class="badge badge-green">Adequate ≥ 15 units</span>
+  <span class="badge badge-yellow">Low &lt; 15 units</span>
+  <span class="badge badge-red">Critical &lt; 5 units</span>
+</div>
+{% endblock %}

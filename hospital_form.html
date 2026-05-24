@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% block title %}{{ action }} Hospital{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-title">{{ action }} Hospital</div>
+    <div class="page-sub">
+      {% if action == 'Add' %}Register a new hospital in the BloodLink network
+      {% else %}Update details for <strong>{{ hospital.Name }}</strong>
+      {% endif %}
+    </div>
+  </div>
+  <a href="{{ url_for('hospitals') }}" class="btn btn-outline">← Back to Hospitals</a>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 340px;gap:1.5rem;align-items:start;">
+
+  <!-- FORM CARD -->
+  <div class="card">
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:1.5rem;
+                display:flex;align-items:center;gap:.5rem;">
+      <span style="color:var(--red);">🏨</span>
+      {% if action == 'Add' %}Hospital Information{% else %}Edit Hospital Details{% endif %}
+    </div>
+
+    <form method="POST"
+          action="{% if action == 'Add' %}{{ url_for('add_hospital') }}{% else %}{{ url_for('edit_hospital', hospital_id=hospital.HospitalID) }}{% endif %}">
+
+      <!-- NAME -->
+      <div class="form-group" style="margin-bottom:1.25rem;">
+        <label for="name">Hospital Name</label>
+        <input type="text" name="name" id="name" required
+               placeholder="e.g. Jinnah General Hospital"
+               value="{{ hospital.Name if hospital else '' }}">
+      </div>
+
+      <div class="form-grid" style="margin-bottom:1.25rem;">
+        <!-- CITY -->
+        <div class="form-group">
+          <label for="city">City</label>
+          <input type="text" name="city" id="city" required
+                 placeholder="e.g. Karachi"
+                 value="{{ hospital.City if hospital else '' }}">
+        </div>
+
+        <!-- CONTACT -->
+        <div class="form-group">
+          <label for="contact">Contact Number</label>
+          <input type="text" name="contact" id="contact" required
+                 placeholder="0XXX-XXXXXXX"
+                 pattern="^0[0-9]{3}-[0-9]{7}$"
+                 title="Format: 0XXX-XXXXXXX (e.g. 0213-9215000)"
+                 value="{{ hospital.ContactNo if hospital else '' }}">
+          <span class="hint">Format: 0XXX-XXXXXXX (e.g. 0213-9215000)</span>
+        </div>
+      </div>
+
+      <!-- ADDRESS -->
+      <div class="form-group" style="margin-bottom:1.75rem;">
+        <label for="address">Full Address</label>
+        <textarea name="address" id="address" required rows="3"
+                  placeholder="Street, area, city…"
+                  style="resize:vertical;">{{ hospital.Address if hospital else '' }}</textarea>
+      </div>
+
+      <!-- SUBMIT -->
+      <div style="display:flex;gap:.75rem;align-items:center;">
+        <button type="submit" class="btn btn-primary" style="min-width:170px;">
+          {% if action == 'Add' %}✓ Register Hospital{% else %}✓ Save Changes{% endif %}
+        </button>
+        <a href="{{ url_for('hospitals') }}" class="btn btn-outline">Cancel</a>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div style="display:flex;flex-direction:column;gap:1rem;">
+
+    <!-- INSTRUCTIONS -->
+    <div class="card card-sm">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;margin-bottom:.85rem;
+                  color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;">
+        {% if action == 'Add' %}Getting Started{% else %}Editing Notes{% endif %}
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.6rem;font-size:.82rem;color:var(--text-dim);">
+        {% if action == 'Add' %}
+        <div style="display:flex;gap:.5rem;">
+          <span style="color:var(--red);flex-shrink:0;">→</span>
+          <span>Each admin account may register one hospital at a time</span>
+        </div>
+        <div style="display:flex;gap:.5rem;">
+          <span style="color:var(--red);flex-shrink:0;">→</span>
+          <span>Once registered you can submit blood requests immediately</span>
+        </div>
+        <div style="display:flex;gap:.5rem;">
+          <span style="color:var(--red);flex-shrink:0;">→</span>
+          <span>Contact number must follow the 0XXX-XXXXXXX pattern</span>
+        </div>
+        <div style="display:flex;gap:.5rem;">
+          <span style="color:var(--red);flex-shrink:0;">→</span>
+          <span>The contact number must be unique across all hospitals</span>
+        </div>
+        {% else %}
+        <div style="display:flex;gap:.5rem;">
+          <span style="color:var(--red);flex-shrink:0;">→</span>
+          <span>All active blood requests are unaffected by edits</span>
+        </div>
+        <div style="display:flex;gap:.5rem;">
+          <span style="color:var(--red);flex-shrink:0;">→</span>
+          <span>Contact number must be unique across all hospitals</span>
+        </div>
+        <div style="display:flex;gap:.5rem;">
+          <span style="color:var(--red);flex-shrink:0;">→</span>
+          <span>Format: 0XXX-XXXXXXX (e.g. 0213-9215000)</span>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if action == 'Edit' and hospital %}
+    <!-- CURRENT DETAILS -->
+    <div class="card card-sm" style="background:rgba(200,16,46,.04);border-color:var(--red-dim);">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;margin-bottom:.85rem;color:var(--red);">
+        Current Details
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.4rem;font-size:.82rem;">
+        <div><span style="color:var(--text-dim);">Name: </span><span style="font-weight:500;">{{ hospital.Name }}</span></div>
+        <div><span style="color:var(--text-dim);">City: </span><span>{{ hospital.City }}</span></div>
+        <div><span style="color:var(--text-dim);">Phone: </span><span style="font-family:'DM Mono',monospace;">{{ hospital.ContactNo }}</span></div>
+        <div><span style="color:var(--text-dim);">ID: </span><span style="font-family:'DM Mono',monospace;">#{{ hospital.HospitalID }}</span></div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- QUICK LINKS -->
+    <div class="card card-sm">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;margin-bottom:.85rem;
+                  color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;">
+        Quick Links
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.5rem;">
+        <a href="{{ url_for('hospitals') }}" class="btn btn-outline btn-sm" style="justify-content:flex-start;">
+          🏨 All Hospitals
+        </a>
+        <a href="{{ url_for('blood_requests') }}" class="btn btn-outline btn-sm" style="justify-content:flex-start;">
+          📋 Blood Requests
+        </a>
+        <a href="{{ url_for('inventory') }}" class="btn btn-outline btn-sm" style="justify-content:flex-start;">
+          📦 Check Inventory
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

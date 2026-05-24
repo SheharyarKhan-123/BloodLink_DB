@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% block title %}Donations{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-title">Donations</div>
+    <div class="page-sub">
+      {% if session.role == 'BankAdmin' %}Donations received at your blood bank
+      {% elif session.role == 'Donor' %}Your personal donation history
+      {% else %}All donation records across the system
+      {% endif %}
+    </div>
+  </div>
+  <div style="display:flex;gap:.75rem;align-items:center;">
+    {% if session.role == 'BankAdmin' %}
+      <a href="{{ url_for('log_donation') }}" class="btn btn-primary">+ Log Donation</a>
+    {% endif %}
+  </div>
+</div>
+
+<!-- SUMMARY STATS -->
+{% if donations %}
+<div class="stat-grid" style="margin-bottom:2rem;">
+  <div class="stat-card">
+    <div class="stat-val">{{ donations|length }}</div>
+    <div class="stat-label">Total Records</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val">{{ donations|sum(attribute='UnitsDonated') }}</div>
+    <div class="stat-label">Total Units</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val" style="font-size:1.35rem;">
+      {{ donations[0].DonationDate if donations else '—' }}
+    </div>
+    <div class="stat-label">Latest Donation</div>
+  </div>
+</div>
+{% endif %}
+
+<!-- DONATIONS TABLE -->
+<div class="card" style="padding:0;">
+  {% if donations %}
+  <div class="table-wrap" style="border:none;border-radius:12px;">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Donor</th>
+          <th>Blood Type</th>
+          <th>Bank</th>
+          <th>Donation Date</th>
+          <th>Units</th>
+          <th>Expiry Date</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for d in donations %}
+        <tr>
+          <td>
+            <span style="font-family:'DM Mono',monospace;font-size:.75rem;color:var(--text-dim);">
+              #{{ d.DonationID }}
+            </span>
+          </td>
+          <td>
+            <div style="font-weight:500;">{{ d.DonorName }}</div>
+          </td>
+          <td><span class="bt">{{ d.BloodType }}</span></td>
+          <td>
+            <span style="font-size:.85rem;color:var(--text-dim);">{{ d.BankName }}</span>
+          </td>
+          <td>
+            <span style="font-family:'DM Mono',monospace;font-size:.82rem;">{{ d.DonationDate }}</span>
+          </td>
+          <td>
+            <span style="font-family:'DM Mono',monospace;font-size:.88rem;font-weight:600;color:var(--red);">
+              {{ d.UnitsDonated }}
+            </span>
+            <span style="font-size:.75rem;color:var(--text-dim);"> unit{% if d.UnitsDonated > 1 %}s{% endif %}</span>
+          </td>
+          <td>
+            <span style="font-family:'DM Mono',monospace;font-size:.82rem;
+              {% if d.ExpiryDate and d.ExpiryDate < today %}color:#f87171;{% else %}color:var(--text-dim);{% endif %}">
+              {{ d.ExpiryDate }}
+            </span>
+          </td>
+          <td>
+            {% if d.ExpiryDate and d.ExpiryDate < today %}
+              <span class="badge badge-red">Expired</span>
+            {% else %}
+              <span class="badge badge-green">Active</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty" style="padding:4rem;">
+    <div class="empty-icon">🩸</div>
+    <div style="font-size:1rem;font-weight:600;margin-bottom:.5rem;color:var(--text);">No donations recorded</div>
+    <div style="font-size:.875rem;">
+      {% if session.role == 'BankAdmin' %}
+        Start by logging a donation from an eligible donor.
+        <br><br>
+        <a href="{{ url_for('log_donation') }}" class="btn btn-primary">+ Log Donation</a>
+      {% elif session.role == 'Donor' %}
+        Your donation history will appear here once recorded by a blood bank.
+      {% else %}
+        No donations have been recorded in the system yet.
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+{% if session.role == 'BankAdmin' and donations %}
+<div style="margin-top:1.5rem;display:flex;gap:.75rem;">
+  <a href="{{ url_for('log_donation') }}" class="btn btn-primary">+ Log Another Donation</a>
+  <a href="{{ url_for('inventory') }}" class="btn btn-outline">View Inventory</a>
+</div>
+{% endif %}
+
+{% endblock %}
