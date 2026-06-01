@@ -11,10 +11,10 @@ app.secret_key = 'bloodlink_secret_key_2026'
 
 # ─── DB CONFIG ────────────────────────────────────────────────
 DB_CONFIG = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': 'KeepAway45@',          # ← Change to your MySQL root password
-    'database': 'blood_bank_db',
+    'host': os.environ.get('DB_HOST', 'localhost'),
+    'user': os.environ.get('DB_USER', 'root'),
+    'password': os.environ.get('DB_PASSWORD', 'KeepAway45@'),
+    'database': os.environ.get('DB_NAME', 'blood_bank_db'),
     'charset': 'utf8mb4'
 }
 
