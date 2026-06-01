@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In — BloodLink</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --red:#c8102e; --red-dim:#8b0d20; --red-glow:rgba(200,16,46,.18);
+      --bg:#0b0c0e; --surface:#111316; --surface2:#181b1f;
+      --border:#222529; --text:#e8e9eb; --text-dim:#8a8d93;
+      --success:#22c55e;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;flex-direction:column;}
+
+    /* decorative bg */
+    .bg-art{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0;}
+    .bg-art::before{content:'';position:absolute;right:-200px;top:-100px;width:600px;height:600px;background:radial-gradient(circle,rgba(200,16,46,.12) 0%,transparent 70%);border-radius:50%;}
+    .bg-art::after{content:'';position:absolute;left:-150px;bottom:-150px;width:400px;height:400px;background:radial-gradient(circle,rgba(200,16,46,.07) 0%,transparent 70%);border-radius:50%;}
+
+    .page{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;}
+
+    .brand{font-family:'Syne',sans-serif;font-weight:800;font-size:1.75rem;letter-spacing:-0.5px;margin-bottom:0.25rem;display:flex;align-items:center;gap:0.5rem;}
+    .brand span{color:var(--red);}
+    .drop{width:10px;height:14px;background:var(--red);clip-path:polygon(50% 0%,100% 40%,75% 40%,75% 100%,25% 100%,25% 40%,0% 40%);display:inline-block;}
+    .tagline{color:var(--text-dim);font-size:0.85rem;margin-bottom:2rem;}
+
+    .box{width:100%;max-width:420px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2rem;}
+    .box-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1.15rem;margin-bottom:1.5rem;}
+
+    .flashes{width:100%;max-width:420px;margin-bottom:1rem;display:flex;flex-direction:column;gap:.5rem;}
+    .flash{padding:.6rem 1rem;border-radius:8px;font-size:.85rem;border-left:3px solid;}
+    .flash.danger{background:rgba(200,16,46,.1);border-color:var(--red);color:#fca5a5;}
+    .flash.success{background:rgba(34,197,94,.08);border-color:var(--success);color:#86efac;}
+    .flash.warning{background:rgba(245,158,11,.08);border-color:#f59e0b;color:#fcd34d;}
+    .flash.info{background:rgba(56,189,248,.08);border-color:#38bdf8;color:#7dd3fc;}
+
+    .form-group{display:flex;flex-direction:column;gap:.35rem;margin-bottom:1rem;}
+    label{font-size:.75rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;font-weight:500;}
+    input{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:.6rem .85rem;border-radius:7px;font-size:.9rem;font-family:inherit;transition:border-color .2s;width:100%;}
+    input:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px var(--red-glow);}
+
+    .btn{display:flex;align-items:center;justify-content:center;width:100%;padding:.65rem;border-radius:7px;font-size:.9rem;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all .2s;margin-top:1.25rem;}
+    .btn-primary{background:var(--red);color:#fff;}
+    .btn-primary:hover{background:#e01030;}
+
+    .divider{display:flex;align-items:center;gap:.75rem;margin:1.25rem 0;color:var(--text-dim);font-size:.8rem;}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+    .link-row{text-align:center;font-size:.85rem;color:var(--text-dim);}
+    .link-row a{color:var(--red);text-decoration:none;}
+    .link-row a:hover{text-decoration:underline;}
+
+    footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:.75rem;text-align:center;font-size:.72rem;color:var(--text-dim);font-family:'DM Mono',monospace;}
+  </style>
+</head>
+<body>
+<div class="bg-art"></div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div style="position:relative;z-index:1;padding-top:2rem;width:100%;display:flex;flex-direction:column;align-items:center;">
+      <div class="flashes">
+        {% for cat, msg in messages %}<div class="flash {{ cat }}">{{ msg }}</div>{% endfor %}
+      </div>
+    </div>
+  {% endif %}
+{% endwith %}
+
+<div class="page">
+  <div class="brand"><span class="drop"></span>Blood<span>Link</span></div>
+  <p class="tagline">Centralized Blood Bank &amp; Donor Management</p>
+
+  <div class="box">
+    <div class="box-title">Sign in to your account</div>
+    <form method="POST" action="{{ url_for('login') }}">
+      <div class="form-group">
+        <label for="email">Email address</label>
+        <input type="email" id="email" name="email" required placeholder="admin@example.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn btn-primary">Sign In</button>
+    </form>
+    <div class="divider">or</div>
+    <div class="link-row">Don't have an account? <a href="{{ url_for('register') }}">Register</a></div>
+  </div>
+</div>
+<footer>BloodLink — BCS-A Database Lab 2026</footer>
+</body>
+</html>
